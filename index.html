@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>OOP Study Guide — SnookerCardClash · Erfan Yavarynejad</title>
+<style>
+:root {
+  --bg:      #0d1117;
+  --surface: #161b22;
+  --card:    #1c2128;
+  --border:  #30363d;
+  --green:   #3fb950;
+  --blue:    #58a6ff;
+  --purple:  #bc8cff;
+  --yellow:  #e3b341;
+  --red:     #f85149;
+  --cyan:    #39d353;
+  --text:    #e6edf3;
+  --muted:   #8b949e;
+  --code-bg: #0d1117;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: -apple-system, 'Segoe UI', sans-serif; display: flex; min-height: 100vh; line-height: 1.6; }
+
+/* ── NAV ── */
+nav {
+  width: 280px; min-width: 280px; background: var(--surface);
+  border-right: 1px solid var(--border);
+  height: 100vh; position: sticky; top: 0;
+  overflow-y: auto; padding: 1.2rem 0; z-index: 10;
+}
+nav .logo { padding: .6rem 1.2rem 1.2rem; border-bottom: 1px solid var(--border); margin-bottom: .8rem; }
+nav .logo h1 { font-size: .95rem; color: var(--green); font-weight: 700; }
+nav .logo p  { font-size: .75rem; color: var(--muted); margin-top: .2rem; }
+nav .nav-group { margin-bottom: .4rem; }
+nav .nav-label { font-size: .68rem; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; padding: .5rem 1.2rem .2rem; font-weight: 600; }
+nav a {
+  display: flex; align-items: center; gap: .5rem;
+  padding: .35rem 1.2rem; color: var(--muted);
+  text-decoration: none; font-size: .82rem;
+  border-left: 2px solid transparent; transition: all .12s;
+}
+nav a:hover { color: var(--text); background: rgba(48,54,61,.5); }
+nav a.active { color: var(--green); border-left-color: var(--green); background: rgba(63,185,80,.08); }
+nav a .num { background: var(--border); color: var(--muted); font-size: .65rem; padding: .1rem .4rem; border-radius: 10px; font-weight: 700; min-width: 20px; text-align: center; }
+nav a.active .num { background: rgba(63,185,80,.2); color: var(--green); }
+
+/* ── MAIN ── */
+main { flex: 1; padding: 2.5rem 3.5rem; max-width: 960px; }
+
+/* ── HERO ── */
+.hero { margin-bottom: 2.5rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border); }
+.hero h1 { font-size: 1.9rem; font-weight: 800; }
+.hero h1 span { color: var(--green); }
+.hero .meta { color: var(--muted); font-size: .88rem; margin-top: .4rem; }
+.hero .tags { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .9rem; }
+.tag { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: .2rem .7rem; font-size: .73rem; color: var(--muted); }
+
+/* ── SECTION ── */
+.section {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 8px; padding: 1.8rem 2rem; margin-bottom: 1.8rem;
+  scroll-margin-top: 1.5rem;
+}
+.section-header { display: flex; align-items: flex-start; gap: .9rem; margin-bottom: 1.2rem; }
+.section-num { background: rgba(63,185,80,.15); color: var(--green); border: 1px solid rgba(63,185,80,.3); border-radius: 8px; padding: .3rem .6rem; font-size: .8rem; font-weight: 700; white-space: nowrap; flex-shrink: 0; }
+.section h2 { font-size: 1.2rem; color: var(--text); font-weight: 700; }
+.section .bro { font-size: .75rem; color: var(--muted); margin-top: .1rem; }
+.section h3 { font-size: .95rem; color: var(--blue); font-weight: 600; margin: 1.2rem 0 .5rem; }
+.section p, .section li { font-size: .9rem; color: #c9d1d9; line-height: 1.75; }
+.section ul, .section ol { padding-left: 1.3rem; }
+.section li { margin-bottom: .25rem; }
+
+/* ── CODE ── */
+pre {
+  background: var(--code-bg); border: 1px solid var(--border);
+  border-radius: 6px; padding: 1rem 1.2rem; margin: .8rem 0;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: .79rem; color: #a5d6ff; overflow-x: auto; line-height: 1.65;
+}
+pre .comment { color: #6e7681; font-style: italic; }
+pre .keyword { color: #ff7b72; }
+pre .string  { color: #a5d6ff; }
+pre .type    { color: #ffa657; }
+pre .method  { color: #d2a8ff; }
+code { background: rgba(110,118,129,.15); padding: .15rem .4rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: .8rem; color: #a5d6ff; }
+
+/* ── CALLOUTS ── */
+.tip {
+  background: rgba(227,179,65,.07); border-left: 3px solid var(--yellow);
+  border-radius: 0 6px 6px 0; padding: .8rem 1rem; margin: 1rem 0;
+  font-size: .87rem; color: #f0d080;
+}
+.tip strong { color: var(--yellow); }
+.exam {
+  background: rgba(63,185,80,.07); border-left: 3px solid var(--green);
+  border-radius: 0 6px 6px 0; padding: .8rem 1rem; margin: 1rem 0;
+  font-size: .87rem; color: #9eeab9;
+}
+.exam strong { color: var(--green); }
+.warn {
+  background: rgba(248,81,73,.07); border-left: 3px solid var(--red);
+  border-radius: 0 6px 6px 0; padding: .8rem 1rem; margin: 1rem 0;
+  font-size: .87rem; color: #ffa8a8;
+}
+.warn strong { color: var(--red); }
+
+/* ── TABLE ── */
+table { width: 100%; border-collapse: collapse; margin: .8rem 0; font-size: .85rem; }
+th { background: rgba(48,54,61,.7); color: var(--blue); text-align: left; padding: .55rem .9rem; border-bottom: 2px solid var(--border); font-size: .8rem; }
+td { padding: .5rem .9rem; border-bottom: 1px solid rgba(48,54,61,.6); color: #c9d1d9; vertical-align: top; }
+tr:last-child td { border-bottom: none; }
+
+/* ── DIVIDER ── */
+.divider { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+
+/* ── QUICKREF ── */
+.qr-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: .8rem; margin-top: 1rem; }
+.qr-card { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: .9rem 1rem; }
+.qr-card h4 { color: var(--green); font-size: .85rem; margin-bottom: .3rem; }
+.qr-card p  { font-size: .79rem; color: var(--muted); }
+
+/* ── PROGRESS BAR ── */
+.progress-wrap { position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 999; background: var(--border); }
+.progress-bar  { height: 100%; background: var(--green); width: 0%; transition: width .1s; }
+
+@media (max-width: 860px) { nav { display: none; } main { padding: 1.5rem; } .qr-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<div class="progress-wrap"><div class="progress-bar" id="bar"></div></div>
+
+<!-- ════════════════════ SIDEBAR ════════════════════ -->
+<nav>
+  <div class="logo">
+    <h1>OOP Study Guide</h1>
+    <p>SnookerCardClash · Erfan 569447</p>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-label">Start Here</div>
+    <a href="#exam-prep">🎯 Exam Prep &amp; Prof Requirements</a>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-label">Bro Code Playlist · 20 Topics</div>
+    <a href="#s1"><span class="num">1</span> Java Objects</a>
+    <a href="#s2"><span class="num">2</span> Java Methods</a>
+    <a href="#s3"><span class="num">3</span> Overloaded Methods</a>
+    <a href="#s4"><span class="num">4</span> Constructors</a>
+    <a href="#s5"><span class="num">5</span> Variable Scope</a>
+    <a href="#s6"><span class="num">6</span> Overloaded Constructors</a>
+    <a href="#s7"><span class="num">7</span> toString Method</a>
+    <a href="#s8"><span class="num">8</span> Array of Objects</a>
+    <a href="#s9"><span class="num">9</span> Object Passing</a>
+    <a href="#s10"><span class="num">10</span> Static Keyword</a>
+    <a href="#s11"><span class="num">11</span> Inheritance</a>
+    <a href="#s12"><span class="num">12</span> Method Overriding</a>
+    <a href="#s13"><span class="num">13</span> Super Keyword</a>
+    <a href="#s14"><span class="num">14</span> Abstraction</a>
+    <a href="#s15"><span class="num">15</span> Access Modifiers</a>
+    <a href="#s16"><span class="num">16</span> Encapsulation</a>
+    <a href="#s17"><span class="num">17</span> Copy Objects</a>
+    <a href="#s18"><span class="num">18</span> Interface</a>
+    <a href="#s19"><span class="num">19</span> Polymorphism</a>
+    <a href="#s20"><span class="num">20</span> Dynamic Polymorphism</a>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-label">Prof's Requirements</div>
+    <a href="#parametric">📐 Parametric Polymorphism</a>
+    <a href="#exceptions">⚠️ Exception Handling</a>
+    <a href="#solid">🏗️ SOLID Principles</a>
+    <a href="#patterns">♟️ Design Patterns</a>
+    <a href="#customizability">⚙️ Rule Customizability</a>
+    <a href="#gamelogy">🎱 Game Logic</a>
+    <a href="#quickref">⚡ Quick Reference</a>
+  </div>
+</nav>
+
+<!-- ════════════════════ MAIN ════════════════════ -->
+<main>
+
+<div class="hero">
+  <h1>OOP Oral Exam — <span>SnookerCardClash</span></h1>
+  <p class="meta">Erfan Yavarynejad · Student ID 569447 · Prof. Distefano · University of Messina · 2025-26</p>
+  <div class="tags">
+    <span class="tag">Java / Swing</span>
+    <span class="tag">20 Bro Code Topics</span>
+    <span class="tag">Strategy Pattern</span>
+    <span class="tag">Template Method</span>
+    <span class="tag">MVC</span>
+    <span class="tag">SOLID</span>
+    <span class="tag">Generics</span>
+    <span class="tag">Exception Handling</span>
+    <span class="tag">Rule Customizability</span>
+  </div>
+</div>
+
+<!-- ── EXAM PREP ── -->
+<div class="section" id="exam-prep">
+  <div class="section-header">
+    <div class="section-num">EXAM</div>
+    <div>
+      <h2>🎯 Exam Prep — What Prof. Distefano Expects</h2>
+    </div>
+  </div>
+  <div class="warn"><strong>CRITICAL:</strong> Deep code inspection during oral exam. You must know every single line. You may be asked to modify code live. BYOD — bring your laptop.</div>
+  <h3>10 Questions You Will Almost Certainly Get</h3>
+  <ol>
+    <li>Show me encapsulation and information hiding in your project.</li>
+    <li>What is the difference between an abstract class and an interface? Show both in your code.</li>
+    <li>Explain the 4 types of polymorphism — where is each in your project?</li>
+    <li>What design pattern did you use for rules? Walk me through it.</li>
+    <li>What is the Dependency Inversion Principle? Show it in GameController.</li>
+    <li>How does a player define a brand new rule — not select one?</li>
+    <li>What is Liskov Substitution? Show it with IGameRule.</li>
+    <li>Explain parametric polymorphism with Deck&lt;T&gt;.</li>
+    <li>What does <code>super()</code> do in RedCard? Why is it necessary?</li>
+    <li>Show me where exception handling is meaningful — not just boilerplate.</li>
+  </ol>
+  <h3>Prof's Explicit OOP Property Checklist</h3>
+  <table>
+    <tr><th>Property</th><th>Your Code</th><th>File / Line</th></tr>
+    <tr><td>Encapsulation</td><td><code>stamina</code>, <code>hand</code>, <code>exhausted</code> are <code>private</code></td><td>Player.java:22-25</td></tr>
+    <tr><td>Information Hiding</td><td><code>applyHandEffect()</code> hook; <code>drawIf()</code></td><td>Card.java:35, Deck.java:20</td></tr>
+    <tr><td>Inheritance</td><td>Card→BallCard→RedCard; Player→AggressiveAI</td><td>Card.java, Player.java</td></tr>
+    <tr><td>Composition</td><td>Player HAS-A Hand; GameState HAS-A Deck</td><td>Player.java:23, GameState.java</td></tr>
+    <tr><td>Abstraction</td><td><code>IPlayable</code>, <code>IGameRule</code>, <code>abstract Card</code>, <code>abstract Player</code></td><td>Card.java:6, IGameRule.java:14</td></tr>
+    <tr><td>Subtyping / Multityping</td><td>Player implements IScoreable; Card implements IPlayable</td><td>Player.java:20, Card.java:12</td></tr>
+    <tr><td>Poly — inclusion</td><td><code>IGameRule rule</code> holds 4 different implementations</td><td>GameState.java:6</td></tr>
+    <tr><td>Poly — parametric</td><td><code>Deck&lt;T extends Card&gt;</code></td><td>Deck.java:6</td></tr>
+    <tr><td>Poly — overloading</td><td>Constructors; <code>restoreStamina</code>/<code>reduceStamina</code></td><td>Player.java</td></tr>
+    <tr><td>Poly — coercion</td><td><code>instanceof RedCard/ColourCard/ActionCard</code></td><td>IGameRule.java:47-50</td></tr>
+    <tr><td>Exception Handling</td><td><code>InvalidMoveException</code>, <code>FoulException(penalty)</code>, <code>EmptyDeckException</code></td><td>Card.java:173-183</td></tr>
+    <tr><td>Extensibility / OCP</td><td>New rule = new class + enum case; 0 existing changes</td><td>RuleFactory.java</td></tr>
+  </table>
+</div>
+
+<!-- ══════════════════ TOPIC 1 ══════════════════ -->
+<div class="section" id="s1">
+  <div class="section-header">
+    <div class="section-num">01</div>
+    <div>
+      <h2>Java Objects (OOP) ☕</h2>
+      <div class="bro">Bro Code · 10:46</div>
+    </div>
+  </div>
+  <p>An <strong>object</strong> is a runtime instance of a class — it has <strong>state</strong> (fields) and <strong>behaviour</strong> (methods). In OOP everything is modelled as an object interacting with other objects.</p>
+  <h3>In my project — every entity is an object</h3>
+  <table>
+    <tr><th>Object</th><th>Class</th><th>State</th><th>Behaviour</th></tr>
+    <tr><td>Red card</td><td><code>RedCard</code></td><td>name="Red", points=1</td><td><code>play()</code> decrements reds on table</td></tr>
+    <tr><td>Human player</td><td><code>HumanPlayer</code></td><td>stamina=20, hand=[5 cards]</td><td><code>chooseCard()</code> reads Scanner input</td></tr>
+    <tr><td>Game state</td><td><code>GameState</code></td><td>redsOnTable=10, glueActive=false</td><td><code>isInClearanceMode()</code>, <code>decrementReds()</code></td></tr>
+    <tr><td>AI player</td><td><code>AggressiveAI</code></td><td>stamina=20, hand=[5 cards]</td><td><code>chooseCard()</code> picks highest-value valid card</td></tr>
+    <tr><td>Rule engine</td><td><code>SnookerRule</code></td><td>stateless</td><td><code>isValid()</code>, <code>calculatePoints()</code></td></tr>
+  </table>
+  <pre><span class="comment">// SnookerCardClash.java — objects created and wired together</span>
+GUIPlayer   p1   = new GUIPlayer("Ronnie");         <span class="comment">// object of type GUIPlayer</span>
+Player      p2   = new AggressiveAI("The Machine"); <span class="comment">// object of type AggressiveAI</span>
+IGameRule   rule = RuleFactory.create(CLASSIC);     <span class="comment">// object of type SnookerRule</span>
+GameController ctrl = new GameController(p1, p2, rule);</pre>
+  <div class="exam"><strong>Oral answer:</strong> "My game is entirely object-based. Each card is an object that knows its own value and how to play itself. Each player is an object that manages its own stamina and hand. The game state is an object that tracks the current phase. They all interact directly — no centralised manager reads their data."</div>
+</div>
+
+<!-- ══════════════════ TOPIC 2 ══════════════════ -->
+<div class="section" id="s2">
+  <div class="section-header">
+    <div class="section-num">02</div>
+    <div>
+      <h2>Java Methods Explained 📞</h2>
+      <div class="bro">Bro Code · 11:05</div>
+    </div>
+  </div>
+  <p>Methods define an object's behaviour. Key concepts: <strong>return type</strong>, <strong>parameters</strong>, <strong>access modifier</strong>, <strong>void vs. returning a value</strong>.</p>
+  <h3>Key methods in my project</h3>
+  <pre><span class="comment">// Player.java — playTurn() is the most important method in the game</span>
+<span class="keyword">public void</span> playTurn(GameState state) {
+    <span class="comment">// void — changes game state, returns nothing</span>
+    Card chosen = chooseCard(state);       <span class="comment">// calls abstract method — returns Card</span>
+    <span class="keyword">boolean</span> valid = rule.isValid(chosen, state); <span class="comment">// returns boolean</span>
+    <span class="keyword">int</span> points = rule.calculatePoints(chosen, state); <span class="comment">// returns int</span>
+    chosen.play(state);                    <span class="comment">// void — side effect on GameState</span>
+}</pre>
+  <h3>Method types present in my project</h3>
+  <table>
+    <tr><th>Type</th><th>Example</th><th>Returns</th></tr>
+    <tr><td>Void (side effect)</td><td><code>card.play(state)</code></td><td>nothing, mutates GameState</td></tr>
+    <tr><td>Query / getter</td><td><code>player.getStamina()</code></td><td><code>int</code></td></tr>
+    <tr><td>Boolean predicate</td><td><code>state.isInClearanceMode()</code></td><td><code>boolean</code></td></tr>
+    <tr><td>Factory</td><td><code>CardFactory.buildStandardDeck()</code></td><td><code>Deck&lt;Card&gt;</code></td></tr>
+    <tr><td>Abstract (no body)</td><td><code>chooseCard(GameState)</code></td><td><code>Card</code></td></tr>
+    <tr><td>Default interface</td><td><code>IGameRule.getStaminaDrain()</code></td><td><code>int</code> (=1)</td></tr>
+  </table>
+  <div class="exam"><strong>Oral answer:</strong> "The most critical method is playTurn() in Player. It orchestrates the entire turn: it calls chooseCard() to get the card, delegates to the rule's isValid() and calculatePoints(), then calls card.play(). It returns void because its job is to mutate the game state, not produce a value."</div>
+</div>
+
+<!-- ══════════════════ TOPIC 3 ══════════════════ -->
+<div class="section" id="s3">
+  <div class="section-header">
+    <div class="section-num">03</div>
+    <div>
+      <h2>Java Overloaded Methods ☎️</h2>
+      <div class="bro">Bro Code · 5:39</div>
+    </div>
+  </div>
+  <p><strong>Overloading</strong> = same method name, different parameter list. Resolved at <strong>compile time</strong> (static dispatch). Not the same as overriding.</p>
+  <h3>In my project</h3>
+  <pre><span class="comment">// Player.java — two stamina-related methods, conceptually overloaded</span>
+<span class="keyword">public void</span>  restoreStamina(<span class="keyword">int</span> amount) { stamina = Math.min(20, stamina + amount); }
+<span class="keyword">private void</span> reduceStamina(<span class="keyword">int</span> drain)   { stamina = Math.max(0,  stamina - drain); }
+
+<span class="comment">// ScoreBoard.java — addPoints is a single method but conceptually
+// demonstrates the pattern used across multiple callers with different data</span>
+<span class="keyword">public void</span> addPoints(String playerName, <span class="keyword">int</span> pts) { ... }
+
+<span class="comment">// Any class has overloaded constructors — see Topic 6 for details</span></pre>
+  <h3>Overloading vs Overriding — key exam distinction</h3>
+  <table>
+    <tr><th></th><th>Overloading</th><th>Overriding</th></tr>
+    <tr><td>Where</td><td>Same class (or subclass)</td><td>Subclass only</td></tr>
+    <tr><td>Signature</td><td>Must differ</td><td>Must be identical</td></tr>
+    <tr><td>Resolved</td><td>Compile time</td><td>Runtime</td></tr>
+    <tr><td>Annotation</td><td>None needed</td><td><code>@Override</code></td></tr>
+  </table>
+  <div class="exam"><strong>Oral answer:</strong> "Overloading appears in my project in stamina management — restoreStamina() and reduceStamina() have the same parameter type but different names to show intent. The clearest overloading is in constructors: RedCard() takes no arguments while ColourCard(String, int) takes two."</div>
+</div>
+
+<!-- ══════════════════ TOPIC 4 ══════════════════ -->
+<div class="section" id="s4">
+  <div class="section-header">
+    <div class="section-num">04</div>
+    <div>
+      <h2>Java Constructors 👷</h2>
+      <div class="bro">Bro Code · 10:37</div>
+    </div>
+  </div>
+  <p>A constructor initialises an object when it is created with <code>new</code>. Same name as the class, no return type.</p>
+  <h3>Constructors across my project</h3>
+  <pre><span class="comment">// Card.java — base class constructor, protected so only subclasses call it</span>
+<span class="keyword">protected</span> Card(String name, <span class="keyword">int</span> points) {
+    this.name   = name;
+    this.points = points;
+}
+
+<span class="comment">// RedCard.java — delegates to BallCard → Card via super chain</span>
+<span class="keyword">public</span> RedCard() { <span class="keyword">super</span>("Red", 1); }
+
+<span class="comment">// ColourCard.java — parameterised; same class, reusable for all 6 colours</span>
+<span class="keyword">public</span> ColourCard(String colour, <span class="keyword">int</span> points) { <span class="keyword">super</span>(colour, points); }
+
+<span class="comment">// GameController.java — wires all objects together at construction time</span>
+<span class="keyword">public</span> GameController(Player p1, Player p2, IGameRule rule) {
+    this.players = new Player[]{p1, p2};
+    ScoreBoard sb = new ScoreBoard();
+    sb.register(p1.getName());
+    sb.register(p2.getName());
+    this.state = new GameState(CardFactory.buildStandardDeck(), sb, rule);
+}</pre>
+  <div class="tip"><strong>Key insight:</strong> The GameController constructor is where Dependency Injection happens — the rule is injected rather than constructed inside. This is both good constructor design and DIP in action.</div>
+  <div class="exam"><strong>Oral answer:</strong> "My constructors follow a chain. RedCard() calls super('Red', 1), which calls BallCard('Red', 1), which calls Card('Red', 1). This is the constructor chain. The GameController constructor is the composition root — it creates the ScoreBoard, registers players, builds the deck, and wires everything into GameState."</div>
+</div>
+
+<!-- ══════════════════ TOPIC 5 ══════════════════ -->
+<div class="section" id="s5">
+  <div class="section-header">
+    <div class="section-num">05</div>
+    <div>
+      <h2>Java Variable Scope 🌍</h2>
+      <div class="bro">Bro Code · 5:38</div>
+    </div>
+  </div>
+  <p>Scope = where a variable is accessible. Three scopes: <strong>instance</strong> (field), <strong>local</strong> (method/block), <strong>static</strong> (class-level).</p>
+  <h3>All three scopes in my project</h3>
+  <pre><span class="comment">// INSTANCE scope — each Player object has its own copy</span>
+<span class="keyword">private int</span> stamina = 20;      <span class="comment">// lives as long as the Player object</span>
+<span class="keyword">private boolean</span> exhausted = false;
+
+<span class="comment">// LOCAL scope — exists only during playTurn() execution</span>
+<span class="keyword">public void</span> playTurn(GameState state) {
+    Card chosen = chooseCard(state);   <span class="comment">// local — gone after method returns</span>
+    boolean valid;
+    int points = rule.calculatePoints(chosen, state);
+}
+
+<span class="comment">// STATIC scope — shared across ALL SnookerRule instances</span>
+<span class="comment">// IGameRule.java (SnookerRule)</span>
+<span class="keyword">static final</span> String[] CLEARANCE_ORDER =
+    {"Yellow", "Green", "Brown", "Blue", "Pink", "Black"};</pre>
+  <table>
+    <tr><th>Variable</th><th>Scope</th><th>Why</th></tr>
+    <tr><td><code>stamina</code></td><td>Instance</td><td>Each player has their own stamina</td></tr>
+    <tr><td><code>CLEARANCE_ORDER</code></td><td>Static</td><td>Same order for all games — no need to duplicate per object</td></tr>
+    <tr><td><code>chosen</code>, <code>valid</code></td><td>Local</td><td>Needed only within one method call</td></tr>
+    <tr><td><code>rule</code> in GameState</td><td>Instance</td><td>Each game session may use a different rule</td></tr>
+  </table>
+  <div class="exam"><strong>Oral answer:</strong> "Variable scope is carefully controlled. stamina is an instance variable — each player has their own pool of 20. CLEARANCE_ORDER is static final because the Yellow→Black clearance order never changes and is shared by all SnookerRule objects. Local variables like chosen and valid exist only for the duration of playTurn()."</div>
+</div>
+
+<!-- ══════════════════ TOPIC 6 ══════════════════ -->
+<div class="section" id="s6">
+  <div class="section-header">
+    <div class="section-num">06</div>
+    <div>
+      <h2>Java Overloaded Constructors 🍕</h2>
+      <div class="bro">Bro Code · 8:02</div>
+    </div>
+  </div>
+  <p>Multiple constructors in the same class with different parameters. Java picks the right one at compile time based on the arguments.</p>
+  <h3>In my project — ColourCard is the best example</h3>
+  <pre><span class="comment">// One ColourCard class covers all 6 colour balls — no duplication</span>
+deck.addCard(new ColourCard("Yellow", 2));
+deck.addCard(new ColourCard("Green",  3));
+deck.addCard(new ColourCard("Brown",  4));
+deck.addCard(new ColourCard("Blue",   5));
+deck.addCard(new ColourCard("Pink",   6));
+deck.addCard(new ColourCard("Black",  7));
+
+<span class="comment">// vs RedCard — only one variant exists, so no-arg constructor suffices</span>
+<span class="keyword">public</span> RedCard() { <span class="keyword">super</span>("Red", 1); }</pre>
+  <h3>RuleFactory enum — alternative to overloaded constructors</h3>
+  <pre><span class="comment">// Instead of overloading RuleFactory.create(), the enum encodes the variant</span>
+RuleType(String displayName, String description) {
+    this.displayName = displayName;
+    this.description = description;
+}</pre>
+  <div class="exam"><strong>Oral answer:</strong> "The clearest example is ColourCard — one class with one constructor that takes (String colour, int points), reused 6 times in CardFactory with different arguments. This avoids writing YellowCard, GreenCard, BrownCard... six separate classes. Constructor parameter design directly impacts class reusability."</div>
+</div>
+
+<!-- ══════════════════ TOPIC 7 ══════════════════ -->
+<div class="section" id="s7">
+  <div class="section-header">
+    <div class="section-num">07</div>
+    <div>
+      <h2>Java toString Method 🎉</h2>
+      <div class="bro">Bro Code · 6:39</div>
+    </div>
+  </div>
+  <p><code>toString()</code> is inherited from <code>Object</code>. Overriding it gives a meaningful string representation when you print an object or concatenate it in a string.</p>
+  <h3>In my project</h3>
+  <pre><span class="comment">// Card.java line 26 — overrides Object.toString()</span>
+@Override
+<span class="keyword">public</span> String toString() { <span class="keyword">return</span> name + "(" + points + "pts)"; }
+
+<span class="comment">// Used throughout — e.g. Player.playTurn() logging:</span>
+System.out.println("  Potted: " + this);
+<span class="comment">// Output: "Potted: Red(1pts)" or "Potted: Black(7pts)"</span>
+
+<span class="comment">// Without override, output would be: "snooker.RedCard@6d06d69c" — useless</span></pre>
+  <h3>Where toString() output appears in game logs</h3>
+  <pre><span class="comment">// RedCard.play():</span>
+System.out.println("  Potted: " + this + "  [Reds remaining: " + state.getRedsOnTable() + "]");
+
+<span class="comment">// GlueCard intercept in Player.playTurn():</span>
+System.out.println("  GLUE blocks " + name + "'s " + chosen.getName() + "! Card wasted.");
+<span class="comment">// chosen.getName() vs chosen.toString() — getName() gives just "Black",
+// toString() gives "Black(7pts)"</span></pre>
+  <div class="exam"><strong>Oral answer:</strong> "I override toString() in the abstract Card class so every subclass inherits it. When I print 'Potted: ' + card, Java automatically calls card.toString() which gives 'Red(1pts)' or 'Black(7pts)'. Without the override every card would print a meaningless memory address."</div>
+</div>
+
+<!-- ══════════════════ TOPIC 8 ══════════════════ -->
+<div class="section" id="s8">
+  <div class="section-header">
+    <div class="section-num">08</div>
+    <div>
+      <h2>Java Array of Objects 🍱</h2>
+      <div class="bro">Bro Code · 6:16</div>
+    </div>
+  </div>
+  <p>An array can hold references to objects. Each slot stores a reference, not a copy of the object.</p>
+  <h3>In my project</h3>
+  <pre><span class="comment">// GameController.java — array of Player objects</span>
+<span class="keyword">private final</span> Player[] players;
+
+<span class="comment">// Initialised in constructor:</span>
+this.players = <span class="keyword">new</span> Player[]{p1, p2};
+
+<span class="comment">// Accessed by turn index:</span>
+Player current = players[turnIndex % 2];
+
+<span class="comment">// SnookerRule.java — static array of String objects (clearance order)</span>
+<span class="keyword">static final</span> String[] CLEARANCE_ORDER =
+    {"Yellow", "Green", "Brown", "Blue", "Pink", "Black"};
+
+<span class="comment">// Used to validate clearance phase card order:</span>
+<span class="keyword">if</span> (!card.getName().equals(CLEARANCE_ORDER[idx])) {
+    <span class="keyword">throw new</span> InvalidMoveException("Expected: " + CLEARANCE_ORDER[idx]);
+}</pre>
+  <div class="tip"><strong>Note:</strong> <code>players[turnIndex % 2]</code> is an elegant way to alternate between two players without if/else. When turnIndex=0 → players[0], turnIndex=1 → players[1], turnIndex=2 → players[0] again.</div>
+  <div class="exam"><strong>Oral answer:</strong> "I use arrays of objects in two places. The Player[] array in GameController holds references to both players and lets me alternate turns with turnIndex % 2. The CLEARANCE_ORDER String[] in SnookerRule encodes the mandatory Yellow→Black sequence and is indexed by clearanceIndex from GameState."</div>
+</div>
+
+<!-- ══════════════════ TOPIC 9 ══════════════════ -->
+<div class="section" id="s9">
+  <div class="section-header">
+    <div class="section-num">09</div>
+    <div>
+      <h2>Java Object Passing 🏬</h2>
+      <div class="bro">Bro Code · 5:13</div>
+    </div>
+  </div>
+  <p>Java passes object references by value. The method receives a copy of the reference — both point to the same object. Mutations inside the method are visible outside.</p>
+  <h3>GameState is passed everywhere — and mutations propagate</h3>
+  <pre><span class="comment">// Player.playTurn() receives GameState by reference</span>
+<span class="keyword">public void</span> playTurn(GameState state) { <span class="comment">// 'state' is a reference copy</span>
+    ...
+    chosen.play(state);   <span class="comment">// card mutates the SAME GameState object</span>
+    <span class="comment">// state.redsOnTable is now decremented — visible to GameController</span>
+}
+
+<span class="comment">// IGameRule.isValid() also receives the same GameState</span>
+<span class="keyword">boolean</span> isValid(Card card, GameState state);
+<span class="comment">// SnookerRule can call state.setPendingFoul(7) — mutation seen by controller</span></pre>
+  <h3>Why this matters in my design</h3>
+  <ul>
+    <li><code>GameState</code> is the shared "blackboard" — all objects read and write it</li>
+    <li>Cards, rules, and players all receive the same reference → no data copying needed</li>
+    <li>This is the <strong>Tell-Don't-Ask</strong> principle: we tell the card "play on this state", not "give me your data so I can update the state myself"</li>
+  </ul>
+  <div class="exam"><strong>Oral answer:</strong> "Java passes objects by reference value. When playTurn() calls card.play(state), the card receives a reference to the same GameState. So when RedCard calls state.decrementReds(), that change is immediately visible to GameController and every other object holding that reference. This is how all game state changes propagate without any return values."</div>
+</div>
+
+<!-- ══════════════════ TOPIC 10 ══════════════════ -->
+<div class="section" id="s10">
+  <div class="section-header">
+    <div class="section-num">10</div>
+    <div>
+      <h2>Java Static Keyword ⚡</h2>
+      <div class="bro">Bro Code · 8:18</div>
+    </div>
+  </div>
+  <p><code>static</code> members belong to the <strong>class</strong>, not to any instance. Shared across all objects. Accessible without creating an object.</p>
+  <h3>Static in my project</h3>
+  <pre><span class="comment">// SnookerRule.java — static field: same order for every game</span>
+<span class="keyword">static final</span> String[] CLEARANCE_ORDER = {"Yellow","Green","Brown","Blue","Pink","Black"};
+
+<span class="comment">// EnduranceModeRule references it without creating a SnookerRule instance:</span>
+<span class="keyword">if</span> (!card.getName().equals(SnookerRule.CLEARANCE_ORDER[idx])) ...
+
+<span class="comment">// CardFactory.java — static method: no factory instance needed</span>
+<span class="keyword">public static</span> Deck&lt;Card&gt; buildStandardDeck() {
+    Deck&lt;Card&gt; deck = new Deck&lt;&gt;();
+    <span class="comment">// ... build 30-card deck ...</span>
+    <span class="keyword">return</span> deck;
+}
+<span class="comment">// Called as: CardFactory.buildStandardDeck() — no new CardFactory() required</span>
+
+<span class="comment">// RuleFactory.java — static factory method</span>
+<span class="keyword">public static</span> IGameRule create(RuleType type) { ... }</pre>
+  <div class="tip"><strong>When to use static:</strong> Data or behaviour that is the same for all instances. CLEARANCE_ORDER never changes per game. buildStandardDeck() always produces the same 30-card deck structure. Static methods are utility operations that need no object state.</div>
+  <div class="exam"><strong>Oral answer:</strong> "I use static in two ways. CLEARANCE_ORDER in SnookerRule is static final because the Yellow→Black sequence is a constant of the game, not of any particular SnookerRule instance. CardFactory.buildStandardDeck() is static because building a deck is a pure utility operation that doesn't depend on any factory object's state."</div>
+</div>
+
+<!-- ══════════════════ TOPIC 11 ══════════════════ -->
+<div class="section" id="s11">
+  <div class="section-header">
+    <div class="section-num">11</div>
+    <div>
+      <h2>Java Inheritance 👪</h2>
+      <div class="bro">Bro Code · 6:11</div>
+    </div>
+  </div>
+  <p>A subclass <code>extends</code> a superclass, inheriting all non-private members. Use for genuine IS-A relationships.</p>
+  <h3>Full inheritance trees in my project</h3>
+  <pre><span class="comment">// CARD hierarchy</span>
+Card (abstract) — implements IPlayable
+ ├── BallCard (abstract) — <span class="keyword">extends</span> Card
+ │    ├── RedCard          — <span class="keyword">extends</span> BallCard
+ │    └── ColourCard       — <span class="keyword">extends</span> BallCard
+ └── ActionCard (abstract) — <span class="keyword">extends</span> Card, always 0pts
+      ├── SafetyCard       — <span class="keyword">extends</span> ActionCard
+      ├── FoulCard         — <span class="keyword">extends</span> ActionCard
+      ├── FreeBallCard     — <span class="keyword">extends</span> ActionCard
+      ├── MagnetCard       — <span class="keyword">extends</span> ActionCard
+      └── GlueCard         — <span class="keyword">extends</span> ActionCard
+
+<span class="comment">// PLAYER hierarchy</span>
+Player (abstract) — implements IScoreable
+ ├── HumanPlayer  — <span class="keyword">extends</span> Player
+ ├── AggressiveAI — <span class="keyword">extends</span> Player
+ └── GUIPlayer    — <span class="keyword">extends</span> Player</pre>
+  <h3>What is inherited vs overridden</h3>
+  <table>
+    <tr><th>Inherited from Card</th><th>Overridden by subclass</th></tr>
+    <tr><td><code>getName()</code>, <code>getPoints()</code></td><td><code>play(GameState)</code> — each card has unique behaviour</td></tr>
+    <tr><td><code>toString()</code></td><td><code>getDescription()</code> — per card text</td></tr>
+    <tr><td><code>applyHandEffect()</code> (no-op)</td><td>MagnetCard overrides to draw Red</td></tr>
+  </table>
+  <div class="exam"><strong>Oral answer:</strong> "BallCard and ActionCard are intermediate abstract classes. ActionCard exists because every action card has 0 points — rather than repeating super('name', 0) in each subclass, ActionCard's constructor does it once: protected ActionCard(String name) { super(name, 0); }. All six action cards inherit this for free."</div>
+</div>
+
+<!-- ══════════════════ TOPIC 12 ══════════════════ -->
+<div class="section" id="s12">
+  <div class="section-header">
+    <div class="section-num">12</div>
+    <div>
+      <h2>Java Method Overriding 🙅‍♂️</h2>
+      <div class="bro">Bro Code · 4:23</div>
+    </div>
+  </div>
+  <p>A subclass provides its own implementation of a method from the superclass/interface. Same signature. Marked <code>@Override</code>. Resolved at <strong>runtime</strong>.</p>
+  <h3>Every @Override in my project</h3>
+  <table>
+    <tr><th>Method</th><th>Declared in</th><th>Overridden by</th><th>What changes</th></tr>
+    <tr><td><code>play(GameState)</code></td><td><code>IPlayable</code></td><td>All 7 card types</td><td>Each card has a unique game effect</td></tr>
+    <tr><td><code>chooseCard(GameState)</code></td><td><code>Player</code> (abstract)</td><td>HumanPlayer, AggressiveAI, GUIPlayer</td><td>Human reads Scanner; AI uses stream; GUI reads pre-selected card</td></tr>
+    <tr><td><code>isValid()</code></td><td><code>IGameRule</code></td><td>All 4 rule classes</td><td>Each rule has different legality logic</td></tr>
+    <tr><td><code>calculatePoints()</code></td><td><code>IGameRule</code></td><td>All 4 rule classes</td><td>ChaosMode doubles; Endurance adds bonus</td></tr>
+    <tr><td><code>getStaminaDrain()</code></td><td><code>IGameRule</code> (default=1)</td><td>EnduranceModeRule</td><td>Returns 2 instead of 1</td></tr>
+    <tr><td><code>applyHandEffect()</code></td><td><code>Card</code> (no-op)</td><td>MagnetCard</td><td>Draws a Red from deck into hand</td></tr>
+    <tr><td><code>toString()</code></td><td><code>Object</code></td><td><code>Card</code></td><td>"Black(7pts)" instead of memory address</td></tr>
+  </table>
+  <pre><span class="comment">// EnduranceModeRule — overrides the default method</span>
+@Override
+<span class="keyword">public int</span> getStaminaDrain() { <span class="keyword">return</span> 2; } <span class="comment">// base in IGameRule returns 1</span></pre>
+  <div class="exam"><strong>Oral answer:</strong> "The most important overriding in my project is chooseCard(). HumanPlayer overrides it to read from Scanner — the player types a number. AggressiveAI overrides it to stream through its hand and pick the highest-scoring valid card. GUIPlayer overrides it to return whatever card was last clicked. Same method signature, three completely different behaviours."</div>
+</div>
+
+<!-- ══════════════════ TOPIC 13 ══════════════════ -->
+<div class="section" id="s13">
+  <div class="section-header">
+    <div class="section-num">13</div>
+    <div>
+      <h2>Java Super Keyword 🦸‍♂️</h2>
+      <div class="bro">Bro Code · 8:09</div>
+    </div>
+  </div>
+  <p><code>super</code> refers to the parent class. Used in constructors (<code>super()</code>) and to call overridden methods (<code>super.method()</code>).</p>
+  <h3>super() in constructor chains</h3>
+  <pre><span class="comment">// The chain: RedCard → BallCard → Card</span>
+
+<span class="keyword">class</span> RedCard <span class="keyword">extends</span> BallCard {
+    <span class="keyword">public</span> RedCard() {
+        <span class="keyword">super</span>("Red", 1);   <span class="comment">// calls BallCard("Red", 1)</span>
+    }
+}
+
+<span class="keyword">abstract class</span> BallCard <span class="keyword">extends</span> Card {
+    <span class="keyword">protected</span> BallCard(String colour, <span class="keyword">int</span> points) {
+        <span class="keyword">super</span>(colour, points);  <span class="comment">// calls Card(colour, points)</span>
+    }
+}
+
+<span class="keyword">public abstract class</span> Card {
+    <span class="keyword">protected</span> Card(String name, <span class="keyword">int</span> points) {
+        this.name   = name;   <span class="comment">// final assignment here — only place</span>
+        this.points = points;
+    }
+}</pre>
+  <h3>ActionCard uses super to enforce 0 points</h3>
+  <pre><span class="keyword">abstract class</span> ActionCard <span class="keyword">extends</span> Card {
+    <span class="keyword">protected</span> ActionCard(String name) {
+        <span class="keyword">super</span>(name, 0);  <span class="comment">// all action cards always 0 pts — enforced here</span>
+    }
+}
+<span class="comment">// SafetyCard never has to remember to pass 0 — super handles it</span>
+<span class="keyword">class</span> SafetyCard <span class="keyword">extends</span> ActionCard {
+    <span class="keyword">public</span> SafetyCard() { <span class="keyword">super</span>("Safety"); }
+}</pre>
+  <div class="exam"><strong>Oral answer:</strong> "super() must be the first line in a constructor if called. The chain is: SafetyCard() → super('Safety') → ActionCard('Safety') → super('Safety', 0) → Card('Safety', 0). The private fields name and points can only be set in Card's constructor — that's why the super chain is mandatory. Without it, name and points would never be initialised."</div>
+</div>
+
+<!-- ══════════════════ TOPIC 14 ══════════════════ -->
+<div class="section" id="s14">
+  <div class="section-header">
+    <div class="section-num">14</div>
+    <div>
+      <h2>Java Abstraction 👻</h2>
+      <div class="bro">Bro Code · 5:30</div>
+    </div>
+  </div>
+  <p>Exposing <strong>what</strong> something does, hiding <strong>how</strong>. In Java: abstract classes (partial implementation) and interfaces (pure contract).</p>
+  <h3>Abstract classes in my project</h3>
+  <pre><span class="comment">// Card — abstract: has shared state + behaviour, but play() must be defined by subclass</span>
+<span class="keyword">public abstract class</span> Card <span class="keyword">implements</span> IPlayable {
+    <span class="keyword">private final</span> String name;
+    <span class="keyword">private final int</span>    points;
+    <span class="comment">// toString(), getName(), getPoints() — concrete (inherited by all cards)</span>
+    <span class="comment">// play(), getDescription() — abstract (each card defines its own)</span>
+}
+
+<span class="comment">// Player — abstract: has shared state (stamina, hand) but decision is abstract</span>
+<span class="keyword">public abstract class</span> Player <span class="keyword">implements</span> IScoreable {
+    <span class="keyword">private int</span> stamina = 20;
+    <span class="keyword">public abstract</span> Card chooseCard(GameState state); <span class="comment">// MUST be overridden</span>
+}</pre>
+  <h3>Abstract class vs Interface — the key exam question</h3>
+  <table>
+    <tr><th></th><th>Abstract Class</th><th>Interface</th></tr>
+    <tr><td>State (fields)</td><td>Yes</td><td>No (only constants)</td></tr>
+    <tr><td>Constructors</td><td>Yes</td><td>No</td></tr>
+    <tr><td>Multiple inheritance</td><td>No (one extends)</td><td>Yes (multiple implements)</td></tr>
+    <tr><td>Use when</td><td>Shared state + partial impl</td><td>Pure contract, unrelated classes</td></tr>
+    <tr><td>Example</td><td><code>Card</code>, <code>Player</code></td><td><code>IGameRule</code>, <code>IPlayable</code></td></tr>
+  </table>
+  <div class="exam"><strong>Oral answer:</strong> "Card is an abstract class because all cards share state — name and points. I can put that in the abstract class. IGameRule is an interface because a rule has no state — it's purely a contract defining isValid() and calculatePoints(). You can't put stamina=20 in an interface."</div>
+</div>
+
+<!-- ══════════════════ TOPIC 15 ══════════════════ -->
+<div class="section" id="s15">
+  <div class="section-header">
+    <div class="section-num">15</div>
+    <div>
+      <h2>Java Access Modifiers 🔒</h2>
+      <div class="bro">Bro Code · 10:13</div>
+    </div>
+  </div>
+  <p>Control who can see what. From most to least restrictive: <code>private</code> → package-private (default) → <code>protected</code> → <code>public</code>.</p>
+  <h3>All four modifiers in my project</h3>
+  <table>
+    <tr><th>Modifier</th><th>Example</th><th>Who can access</th></tr>
+    <tr><td><code>private</code></td><td><code>Player.stamina</code>, <code>Player.reduceStamina()</code></td><td>Only Player class itself</td></tr>
+    <tr><td>package-private</td><td><code>Card.applyHandEffect()</code></td><td>Only classes in <code>snooker</code> package</td></tr>
+    <tr><td><code>protected</code></td><td><code>Card(String, int)</code> constructor, <code>BallCard(String, int)</code></td><td>Card class + subclasses</td></tr>
+    <tr><td><code>public</code></td><td><code>IGameRule</code>, <code>Card.getName()</code>, <code>Player.playTurn()</code></td><td>Everyone</td></tr>
+  </table>
+  <pre><span class="comment">// Card.java — four modifiers in one file</span>
+<span class="keyword">public abstract class</span> Card <span class="keyword">implements</span> IPlayable {   <span class="comment">// public — visible everywhere</span>
+    <span class="keyword">private final</span> String name;                          <span class="comment">// private — only Card reads it</span>
+    <span class="keyword">protected</span> Card(String name, <span class="keyword">int</span> points) { ... }    <span class="comment">// protected — subclasses only</span>
+    <span class="keyword">void</span> applyHandEffect(Hand h, GameState s) {}        <span class="comment">// package — snooker pkg only</span>
+    <span class="keyword">public</span> String getName() { <span class="keyword">return</span> name; }           <span class="comment">// public — everyone reads name</span>
+}</pre>
+  <div class="exam"><strong>Oral answer:</strong> "applyHandEffect() is package-private — no modifier written. It's intentional: only classes within the snooker package (Player.playTurn()) should call it. It shouldn't be public because external code has no business calling it, and it shouldn't be private because Card subclasses need to override it."</div>
+</div>
+
+<!-- ══════════════════ TOPIC 16 ══════════════════ -->
+<div class="section" id="s16">
+  <div class="section-header">
+    <div class="section-num">16</div>
+    <div>
+      <h2>Java Encapsulation 💊</h2>
+      <div class="bro">Bro Code · 8:27</div>
+    </div>
+  </div>
+  <p>Bundling data and the methods that operate on it. Private fields + public getters/setters. External code cannot corrupt internal state directly.</p>
+  <h3>Player — textbook encapsulation</h3>
+  <pre><span class="comment">// Player.java — ALL fields private</span>
+<span class="keyword">private final</span> String  name;
+<span class="keyword">private final</span> Hand    hand     = new Hand();
+<span class="keyword">private</span>       <span class="keyword">int</span>     stamina  = 20;
+<span class="keyword">private</span>       <span class="keyword">boolean</span> exhausted = false;
+
+<span class="comment">// Public read access only:</span>
+<span class="keyword">public</span> String  getName()     { <span class="keyword">return</span> name; }
+<span class="keyword">public</span> Hand    getHand()     { <span class="keyword">return</span> hand; }
+<span class="keyword">public int</span>     getStamina()  { <span class="keyword">return</span> stamina; }
+<span class="keyword">public boolean</span> isExhausted() { <span class="keyword">return</span> exhausted; }
+
+<span class="comment">// The ONLY ways to change stamina — both controlled internally:</span>
+<span class="keyword">public void</span>  restoreStamina(<span class="keyword">int</span> amount) { stamina = Math.min(20, stamina + amount); }
+<span class="keyword">private void</span> reduceStamina(<span class="keyword">int</span> drain)   {
+    stamina = Math.max(0, stamina - drain);
+    <span class="keyword">if</span> (stamina == 0) exhausted = true;  <span class="comment">// side effect: exhausted set here only</span>
+}</pre>
+  <h3>Why reduceStamina() is private</h3>
+  <p>No external code can drain a player's stamina arbitrarily. The only entry point is <code>playTurn()</code>, which calls <code>reduceStamina(rule.getStaminaDrain())</code> at the end of every turn. This is encapsulation protecting a game invariant.</p>
+  <div class="exam"><strong>Oral answer:</strong> "The stamina system is the strongest encapsulation example. stamina is private — no external class can set it directly. reduceStamina() is private — only playTurn() can call it. restoreStamina() is public — only used by the stamina challenge. The exhausted flag is only ever set inside reduceStamina(). The entire stamina lifecycle is self-contained inside Player."</div>
+</div>
+
+<!-- ══════════════════ TOPIC 17 ══════════════════ -->
+<div class="section" id="s17">
+  <div class="section-header">
+    <div class="section-num">17</div>
+    <div>
+      <h2>Java Copy Objects 🖨️</h2>
+      <div class="bro">Bro Code · 7:08</div>
+    </div>
+  </div>
+  <p>Assigning an object variable copies the <strong>reference</strong>, not the object. To truly copy: implement <code>clone()</code> or a copy constructor. Shallow copy vs deep copy matters.</p>
+  <h3>Reference sharing in my project</h3>
+  <pre><span class="comment">// GameState is shared by reference — NOT copied</span>
+Player current = players[turnIndex % 2];
+current.playTurn(state);  <span class="comment">// state is same object for everyone</span>
+
+<span class="comment">// If we did this, it would be a reference copy — NOT a new object:</span>
+GameState copy = state;   <span class="comment">// WRONG: copy and state point to same object</span>
+<span class="comment">// Mutations to 'copy' affect 'state' — they are the SAME object</span></pre>
+  <h3>Why my design avoids object copying</h3>
+  <ul>
+    <li>The game needs a single shared <code>GameState</code> — all players and rules must see the same <code>redsOnTable</code>, same <code>clearanceIndex</code>, same <code>glueActive</code> flag</li>
+    <li>Copying GameState would create divergent game state — a bug</li>
+    <li>The <code>Hand</code> returned by <code>getHand()</code> uses <code>Collections.unmodifiableList()</code> so callers can read the list but cannot add/remove cards from it directly — a form of defensive copying</li>
+  </ul>
+  <pre><span class="comment">// Hand.java — defensive copy via unmodifiable view</span>
+<span class="keyword">public</span> List&lt;Card&gt; getCards() {
+    <span class="keyword">return</span> Collections.unmodifiableList(cards);
+    <span class="comment">// caller can iterate but cannot call add() or remove()</span>
+}</pre>
+  <div class="exam"><strong>Oral answer:</strong> "My design intentionally avoids copying objects. GameState is one shared object — all methods receive the same reference. Hand.getCards() returns an unmodifiable view, which is a form of defensive copying — the caller sees the real list but cannot modify it, protecting encapsulation."</div>
+</div>
+
+<!-- ══════════════════ TOPIC 18 ══════════════════ -->
+<div class="section" id="s18">
+  <div class="section-header">
+    <div class="section-num">18</div>
+    <div>
+      <h2>Java Interface 🦅</h2>
+      <div class="bro">Bro Code · 7:51</div>
+    </div>
+  </div>
+  <p>A pure contract — defines what a class must do, not how. Allows <strong>multiple inheritance of type</strong>. Enables polymorphism across unrelated class hierarchies.</p>
+  <h3>Three interfaces in my project</h3>
+  <pre><span class="comment">// IPlayable — contract for anything that can be played</span>
+<span class="keyword">interface</span> IPlayable {
+    <span class="keyword">void</span> play(GameState state) <span class="keyword">throws</span> InvalidMoveException, FoulException;
+    String getDescription();
+}
+
+<span class="comment">// IGameRule — contract for any rule engine</span>
+<span class="keyword">public interface</span> IGameRule {
+    <span class="keyword">boolean</span> isValid(Card card, GameState state) <span class="keyword">throws</span> InvalidMoveException;
+    <span class="keyword">int</span> calculatePoints(Card card, GameState state);
+    <span class="keyword">default int</span> getStaminaDrain() { <span class="keyword">return</span> 1; } <span class="comment">// Java 8 default method</span>
+}
+
+<span class="comment">// IScoreable — contract for anything with a score</span>
+<span class="keyword">interface</span> IScoreable {
+    <span class="keyword">int</span>  getScore();
+    <span class="keyword">void</span> addScore(<span class="keyword">int</span> points);
+}</pre>
+  <h3>Interface vs Abstract Class — your go-to table</h3>
+  <table>
+    <tr><th>Question</th><th>Interface</th><th>Abstract Class</th></tr>
+    <tr><td>Can have fields?</td><td>No (only static final)</td><td>Yes</td></tr>
+    <tr><td>Can have constructor?</td><td>No</td><td>Yes</td></tr>
+    <tr><td>Multiple inheritance?</td><td>Yes — class implements A, B, C</td><td>No — class extends only one</td></tr>
+    <tr><td>Default methods?</td><td>Yes (Java 8+)</td><td>Yes (regular methods)</td></tr>
+    <tr><td>Use case</td><td>Unrelated classes sharing a behaviour</td><td>Related classes sharing state + partial behaviour</td></tr>
+  </table>
+  <div class="exam"><strong>Oral answer:</strong> "IGameRule is the most important interface. It defines three methods that every rule engine must implement. Thanks to this interface, Player.playTurn() never imports SnookerRule or ChaosModeRule — it only calls rule.isValid() and rule.calculatePoints() on the IGameRule reference. You can add a new rule class tomorrow and playTurn() works without any changes."</div>
+</div>
+
+<!-- ══════════════════ TOPIC 19 ══════════════════ -->
+<div class="section" id="s19">
+  <div class="section-header">
+    <div class="section-num">19</div>
+    <div>
+      <h2>Java Polymorphism 🏁</h2>
+      <div class="bro">Bro Code · 6:12</div>
+    </div>
+  </div>
+  <p>"Many forms" — one interface, multiple behaviours. All four types are present in my project.</p>
+  <h3>1. Inclusion / Subtype Polymorphism</h3>
+  <pre><span class="comment">// IGameRule variable holds any concrete implementation</span>
+IGameRule rule = new ChaosModeRule();    <span class="comment">// or SnookerRule, EnduranceModeRule</span>
+rule.isValid(card, state);               <span class="comment">// dispatched at runtime to ChaosModeRule</span>
+
+<span class="comment">// Card reference holds any card subtype</span>
+Card c = new RedCard();
+c.play(state);    <span class="comment">// dispatched at runtime to RedCard.play()</span></pre>
+  <h3>2. Parametric Polymorphism (Generics)</h3>
+  <pre><span class="comment">// Deck works for any Card subtype</span>
+Deck&lt;Card&gt; deck = new Deck&lt;&gt;();
+T drawIf(Predicate&lt;T&gt; condition) throws EmptyDeckException { ... }</pre>
+  <h3>3. Overloading (Ad-hoc / Compile-time)</h3>
+  <pre><span class="comment">// Same name, different parameters — resolved at compile time</span>
+<span class="keyword">public</span>  RedCard()                           { <span class="keyword">super</span>("Red", 1); }
+<span class="keyword">public</span>  ColourCard(String colour, <span class="keyword">int</span> pts)  { <span class="keyword">super</span>(colour, pts); }</pre>
+  <h3>4. Coercion</h3>
+  <pre><span class="comment">// Type narrowing via instanceof in isValid()</span>
+<span class="keyword">if</span> (card <span class="keyword">instanceof</span> RedCard)    <span class="keyword">return</span> state.expectingRed();
+<span class="keyword">if</span> (card <span class="keyword">instanceof</span> ColourCard) <span class="keyword">return</span> state.lastPlayedRed();
+<span class="keyword">if</span> (card <span class="keyword">instanceof</span> ActionCard) <span class="keyword">return</span> true;</pre>
+  <div class="exam"><strong>Oral answer:</strong> "My project demonstrates all four. Inclusion: IGameRule reference dispatches to one of four implementations at runtime. Parametric: Deck&lt;T extends Card&gt; is type-safe for any Card subtype. Overloading: constructors like RedCard() vs ColourCard(String, int) are resolved at compile time. Coercion: instanceof checks in isValid() narrow a Card reference to a specific subtype."</div>
+</div>
+
+<!-- ══════════════════ TOPIC 20 ══════════════════ -->
+<div class="section" id="s20">
+  <div class="section-header">
+    <div class="section-num">20</div>
+    <div>
+      <h2>Java Dynamic Polymorphism ✨</h2>
+      <div class="bro">Bro Code · 8:52</div>
+    </div>
+  </div>
+  <p>The actual method called is determined at <strong>runtime</strong> based on the real type of the object, not the declared type of the variable. Also called late binding or runtime dispatch.</p>
+  <h3>The core example — rule dispatch</h3>
+  <pre><span class="comment">// Player.playTurn() — rule is declared as IGameRule (compile-time type)</span>
+IGameRule rule = state.getRule();
+
+<span class="comment">// At compile time: Java only knows this is an IGameRule</span>
+<span class="comment">// At runtime: if the player picked Chaos mode, rule is actually ChaosModeRule</span>
+<span class="keyword">boolean</span> valid  = rule.isValid(chosen, state);       <span class="comment">// → ChaosModeRule.isValid()</span>
+<span class="keyword">int</span>     points = rule.calculatePoints(chosen, state); <span class="comment">// → ChaosModeRule.calculatePoints()</span></pre>
+  <h3>Dynamic dispatch on cards</h3>
+  <pre><span class="comment">// Player.playTurn() — chosen is Card at compile time</span>
+Card chosen = chooseCard(state);
+chosen.play(state);
+<span class="comment">// If chosen is actually a GlueCard at runtime → GlueCard.play() is called
+// If chosen is actually a RedCard at runtime  → RedCard.play() is called
+// The code in playTurn() never changes — the behaviour does</span></pre>
+  <h3>Why this is powerful in my project</h3>
+  <ul>
+    <li>Adding a new card type (e.g., <code>BombCard</code>) never changes <code>playTurn()</code></li>
+    <li>Adding a new rule (e.g., <code>CustomRule</code>) never changes <code>playTurn()</code> or <code>GameController</code></li>
+    <li>The system is open to extension without modification — this <em>is</em> the Open/Closed Principle</li>
+  </ul>
+  <div class="exam"><strong>Oral answer:</strong> "Dynamic polymorphism is the heart of my design. playTurn() calls rule.isValid() but never knows which rule is running. If I add a CustomRule tomorrow — new class, no changes to playTurn() or GameController. At runtime the JVM looks at the actual object type and dispatches to the right implementation. This is late binding, and it's what makes the project extensible."</div>
+</div>
+
+<hr class="divider"/>
+
+<!-- ══════════════════ PARAMETRIC ══════════════════ -->
+<div class="section" id="parametric">
+  <div class="section-header">
+    <div class="section-num">+</div>
+    <div><h2>📐 Parametric Polymorphism — Generics</h2></div>
+  </div>
+  <p>Prof explicitly requires this. Write code once that works for any type satisfying a constraint.</p>
+  <pre><span class="comment">// Deck.java</span>
+<span class="keyword">public class</span> Deck&lt;T <span class="keyword">extends</span> Card&gt; {
+    <span class="keyword">private final</span> List&lt;T&gt; cards = new ArrayList&lt;&gt;();
+
+    <span class="keyword">public</span> T draw() <span class="keyword">throws</span> EmptyDeckException { ... }
+
+    <span class="keyword">public</span> T drawIf(Predicate&lt;T&gt; condition) <span class="keyword">throws</span> EmptyDeckException {
+        <span class="keyword">for</span> (<span class="keyword">int</span> i = 0; i &lt; cards.size(); i++) {
+            <span class="keyword">if</span> (condition.test(cards.get(i))) <span class="keyword">return</span> cards.remove(i);
+        }
+        <span class="keyword">throw new</span> EmptyDeckException();
+    }
+}
+<span class="comment">// MagnetCard uses it with a lambda predicate:</span>
+Card red = deck.drawIf(c -> c <span class="keyword">instanceof</span> RedCard);</pre>
+  <div class="exam"><strong>Oral answer:</strong> "Deck&lt;T extends Card&gt; is parametric polymorphism. The bound 'T extends Card' means only Card subtypes can go into a Deck — type safety enforced at compile time. drawIf(Predicate&lt;T&gt;) is also parametric — Predicate is a generic functional interface. MagnetCard calls it with a lambda that checks instanceof RedCard."</div>
+</div>
+
+<!-- ══════════════════ EXCEPTIONS ══════════════════ -->
+<div class="section" id="exceptions">
+  <div class="section-header">
+    <div class="section-num">+</div>
+    <div><h2>⚠️ Exception Handling</h2></div>
+  </div>
+  <pre><span class="comment">// Card.java — three custom exception classes</span>
+<span class="keyword">class</span> InvalidMoveException <span class="keyword">extends</span> Exception {
+    <span class="keyword">public</span> InvalidMoveException(String msg) { <span class="keyword">super</span>(msg); }
+}
+<span class="keyword">class</span> EmptyDeckException <span class="keyword">extends</span> Exception {
+    <span class="keyword">public</span> EmptyDeckException() { <span class="keyword">super</span>("Deck empty!"); }
+}
+<span class="keyword">class</span> FoulException <span class="keyword">extends</span> Exception {
+    <span class="keyword">private final int</span> penalty;
+    <span class="keyword">public</span> FoulException(String msg, <span class="keyword">int</span> penalty) { <span class="keyword">super</span>(msg); this.penalty = penalty; }
+    <span class="keyword">public int</span> getPenalty() { <span class="keyword">return</span> penalty; }
+}</pre>
+  <table>
+    <tr><th>Exception</th><th>Thrown by</th><th>Caught in</th><th>Effect</th></tr>
+    <tr><td><code>InvalidMoveException</code></td><td>SnookerRule (clearance violation)</td><td>Player.playTurn()</td><td>Turn forfeited, stamina still drained</td></tr>
+    <tr><td><code>EmptyDeckException</code></td><td>Deck.draw(), Deck.drawIf()</td><td>GameController, MagnetCard</td><td>Logged; game may end</td></tr>
+    <tr><td><code>FoulException(penalty=4)</code></td><td>FoulCard.play()</td><td>Player.playTurn()</td><td>Penalty points tracked separately</td></tr>
+  </table>
+  <div class="exam"><strong>Oral answer:</strong> "FoulException is the most interesting. It extends Exception — checked — so every caller must handle it. It carries a penalty int field because the penalty amount is part of the foul event itself. The caller doesn't need to look up what a foul costs — the exception tells it."</div>
+</div>
+
+<!-- ══════════════════ SOLID ══════════════════ -->
+<div class="section" id="solid">
+  <div class="section-header">
+    <div class="section-num">+</div>
+    <div><h2>🏗️ SOLID Principles</h2></div>
+  </div>
+  <table>
+    <tr><th>Principle</th><th>In my project</th></tr>
+    <tr><td><strong>S</strong> — Single Responsibility</td><td><code>ScoreBoard</code> only scores. <code>Card.play()</code> mutates state flags. <code>Card.applyHandEffect()</code> mutates hand. Two methods, two responsibilities.</td></tr>
+    <tr><td><strong>O</strong> — Open/Closed</td><td>New rule = new class + enum case. <code>GameController</code>, <code>Player</code>, <code>GameState</code> never modified.</td></tr>
+    <tr><td><strong>L</strong> — Liskov Substitution</td><td>Any <code>IGameRule</code> subtype works in <code>GameController</code> without breaking it. Any <code>Player</code> subtype can replace another.</td></tr>
+    <tr><td><strong>I</strong> — Interface Segregation</td><td><code>IPlayable</code> (2 methods), <code>IScoreable</code> (2 methods), <code>IGameRule</code> (3 methods). Small focused interfaces.</td></tr>
+    <tr><td><strong>D</strong> — Dependency Inversion</td><td><code>GameController(IGameRule rule)</code> depends on abstraction. <code>Player.playTurn()</code> calls <code>rule.isValid()</code> never <code>SnookerRule.isValid()</code>.</td></tr>
+  </table>
+</div>
+
+<!-- ══════════════════ PATTERNS ══════════════════ -->
+<div class="section" id="patterns">
+  <div class="section-header">
+    <div class="section-num">+</div>
+    <div><h2>♟️ Design Patterns</h2></div>
+  </div>
+  <table>
+    <tr><th>Pattern</th><th>Where</th><th>One-line explanation</th></tr>
+    <tr><td>Strategy</td><td><code>IGameRule</code> + 4 implementations</td><td>Swap rule algorithms at runtime without changing callers</td></tr>
+    <tr><td>Template Method</td><td><code>Player.playTurn()</code> + abstract <code>chooseCard()</code></td><td>Turn skeleton fixed; card selection varies per subclass</td></tr>
+    <tr><td>Factory</td><td><code>CardFactory</code>, <code>RuleFactory</code></td><td>Create objects without exposing constructors to callers</td></tr>
+    <tr><td>Builder (planned)</td><td><code>RuleBuilder → CustomRule</code></td><td>Compose a rule step-by-step; call build() for the object</td></tr>
+    <tr><td>MVC</td><td><code>GameState</code> / <code>SnookerGUI</code> / <code>GameController</code></td><td>Model holds data; View renders it; Controller mediates</td></tr>
+    <tr><td>Dependency Injection</td><td><code>GameController(IGameRule rule)</code></td><td>Rule injected by caller; controller never constructs it</td></tr>
+  </table>
+</div>
+
+<!-- ══════════════════ CUSTOMIZABILITY ══════════════════ -->
+<div class="section" id="customizability">
+  <div class="section-header">
+    <div class="section-num">+</div>
+    <div><h2>⚙️ Rule Customizability — Prof's Main Focus</h2></div>
+  </div>
+  <div class="warn"><strong>Prof's exact words:</strong> "letting the player to define brand new rules not to select among existing one."</div>
+  <h3>Current: selection (not enough)</h3>
+  <p>Player picks one of 4 fixed rule sets from the GUI. This is a menu, not authorship.</p>
+  <h3>Planned: CustomRule + RuleBuilder + RuleParser</h3>
+  <pre><span class="comment">// CustomRule implements IGameRule — player-defined parameters</span>
+<span class="keyword">public class</span> CustomRule <span class="keyword">implements</span> IGameRule {
+    <span class="keyword">private final boolean</span> sequenceEnforced;
+    <span class="keyword">private final double</span>  scoreMultiplier;
+    <span class="keyword">private final int</span>     staminaDrain;
+    <span class="keyword">private final int</span>     foulPenalty;
+
+    @Override <span class="keyword">public boolean</span> isValid(Card c, GameState s) <span class="keyword">throws</span> InvalidMoveException {
+        <span class="keyword">if</span> (!sequenceEnforced) <span class="keyword">return true</span>;
+        <span class="comment">// apply sequence logic using foulPenalty instead of hardcoded 7</span>
+    }
+    @Override <span class="keyword">public int</span> calculatePoints(Card c, GameState s) {
+        <span class="keyword">return</span> (<span class="keyword">int</span>)(c.getPoints() * scoreMultiplier);
+    }
+    @Override <span class="keyword">public int</span> getStaminaDrain() { <span class="keyword">return</span> staminaDrain; }
+}
+
+<span class="comment">// Console interaction:</span>
+<span class="comment">// > Sequence enforced? (y/n): n</span>
+<span class="comment">// > Score multiplier: 2.5</span>
+<span class="comment">// > Stamina drain per turn: 3</span>
+<span class="comment">// > Foul penalty: 7</span>
+<span class="comment">// IGameRule rule = new RuleBuilder().sequence(false).multiplier(2.5)...</span>
+<span class="comment">//                                   .staminaDrain(3).foulPenalty(7).build();</span></pre>
+  <div class="exam"><strong>Oral answer:</strong> "Currently the player selects from 4 pre-built rules. The professor wants the player to author a rule from scratch. I'm adding CustomRule — a new IGameRule implementation whose behaviour is assembled from parameters set at runtime. RuleBuilder provides a fluent console interface. Because CustomRule implements IGameRule, GameController and Player accept it with zero code changes — this is OCP in action."</div>
+</div>
+
+<!-- ══════════════════ GAME LOGIC ══════════════════ -->
+<div class="section" id="gamelogy">
+  <div class="section-header">
+    <div class="section-num">+</div>
+    <div><h2>🎱 Game Logic — Full Walkthrough</h2></div>
+  </div>
+  <h3>Finite State Machine</h3>
+  <table>
+    <tr><th>Phase</th><th>Trigger</th><th>Rule</th></tr>
+    <tr><td>Standard</td><td>Game start (<code>redsOnTable = 10</code>)</td><td>Red → Colour sequence; Colours return to deck</td></tr>
+    <tr><td>Clearance</td><td><code>redsOnTable == 0</code></td><td>No Reds; Colours in strict Yellow→Black order</td></tr>
+    <tr><td>Game Over</td><td>Black potted / stamina = 0 / deck empty</td><td>Winner by score or exhaustion</td></tr>
+  </table>
+  <h3>Turn Execution — playTurn() step by step</h3>
+  <ol style="padding-left:1.3rem; line-height:2.2">
+    <li>Safety block? → skip turn, clear flag</li>
+    <li>Stamina = 0? → exhaustion detected by GameController</li>
+    <li>Hand empty? → skip turn</li>
+    <li><code>chooseCard(state)</code> — Human/AI/GUI picks a card</li>
+    <li>GlueCard active? → block if card ≥ 5pts, consume glue regardless</li>
+    <li><code>rule.isValid(chosen, state)</code> → forfeit turn if false or exception</li>
+    <li><code>rule.calculatePoints(chosen, state)</code> → <em>before</em> play() so pre-play flags are readable</li>
+    <li><code>chosen.play(state)</code> → card mutates game state flags</li>
+    <li><code>chosen.applyHandEffect(hand, state)</code> → MagnetCard draws Red</li>
+    <li>Advance clearance index if ColourCard potted in clearance phase</li>
+    <li><code>reduceStamina(rule.getStaminaDrain())</code></li>
+  </ol>
+  <h3>Deck — 30 cards</h3>
+  <p>10×Red(1pt) + Yellow(2)+Green(3)+Brown(4)+Blue(5)+Pink(6)+Black(7) + Safety + FreeBall + Magnet×2 + Glue×2</p>
+</div>
+
+<!-- ══════════════════ QUICK REF ══════════════════ -->
+<div class="section" id="quickref">
+  <div class="section-header">
+    <div class="section-num">⚡</div>
+    <div><h2>Quick Reference — 30-Second Cards</h2></div>
+  </div>
+  <div class="qr-grid">
+    <div class="qr-card"><h4>Encapsulation</h4><p>Player.stamina private. Only reduceStamina() (private) changes it. Only playTurn() calls that.</p></div>
+    <div class="qr-card"><h4>Info Hiding</h4><p>applyHandEffect() hook — card reaches hand without hand being public. drawIf() hides ArrayList.</p></div>
+    <div class="qr-card"><h4>Abstraction</h4><p>abstract Card (shared state). IGameRule interface (pure contract). abstract Player.chooseCard().</p></div>
+    <div class="qr-card"><h4>Inheritance</h4><p>Card→BallCard→RedCard/ColourCard. Card→ActionCard→6 types. Player→3 subclasses.</p></div>
+    <div class="qr-card"><h4>Composition</h4><p>Player HAS-A Hand. GameState HAS-A Deck + ScoreBoard + IGameRule. GameController HAS-A GameState.</p></div>
+    <div class="qr-card"><h4>Subtyping / Multityping</h4><p>Player implements IScoreable → IS-A Player AND IS-A IScoreable simultaneously.</p></div>
+    <div class="qr-card"><h4>Poly — Inclusion</h4><p>IGameRule rule → holds ChaosModeRule at runtime. card.play() → dispatches to RedCard.play().</p></div>
+    <div class="qr-card"><h4>Poly — Parametric</h4><p>Deck&lt;T extends Card&gt;. drawIf(Predicate&lt;T&gt;). Type safe, no casting needed.</p></div>
+    <div class="qr-card"><h4>Poly — Overloading</h4><p>RedCard() vs ColourCard(String, int). Same name (constructor), different params. Compile-time.</p></div>
+    <div class="qr-card"><h4>Poly — Coercion</h4><p>instanceof RedCard/ColourCard/ActionCard in isValid(). Widening: RedCard→Card implicit.</p></div>
+    <div class="qr-card"><h4>Poly — Overriding</h4><p>@Override play(), chooseCard(), isValid(), calculatePoints(). Runtime dispatch. @Override annotation.</p></div>
+    <div class="qr-card"><h4>Exceptions</h4><p>FoulException(penalty=4) carries domain data. InvalidMoveException for ordering. EmptyDeckException for deck.</p></div>
+    <div class="qr-card"><h4>Strategy Pattern</h4><p>IGameRule = interface. 4 strategies. GameState holds it. Player delegates all logic checks to it.</p></div>
+    <div class="qr-card"><h4>Template Method</h4><p>Player.playTurn() = fixed skeleton. chooseCard() = abstract hole. Subclasses fill it differently.</p></div>
+    <div class="qr-card"><h4>super keyword</h4><p>RedCard() → super("Red",1) → BallCard → super(colour,pts) → Card → this.name=name.</p></div>
+    <div class="qr-card"><h4>Static keyword</h4><p>CLEARANCE_ORDER static final — one copy for all games. CardFactory.buildStandardDeck() static utility.</p></div>
+  </div>
+  <div class="tip" style="margin-top:1.3rem"><strong>GitHub repo note:</strong> When pushing this guide to GitHub, create a new repo named <code>oop-study-guide</code> with a README.md linking to the HTML file. GitHub Pages can host it directly so it's viewable in browser.</div>
+</div>
+
+</main>
+
+<script>
+// Progress bar
+window.addEventListener('scroll', () => {
+  const el = document.documentElement;
+  const pct = (el.scrollTop / (el.scrollHeight - el.clientHeight)) * 100;
+  document.getElementById('bar').style.width = pct + '%';
+});
+
+// Active nav link
+const sections = document.querySelectorAll('.section');
+const links    = document.querySelectorAll('nav a');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      links.forEach(l => l.classList.remove('active'));
+      const match = document.querySelector('nav a[href="#' + e.target.id + '"]');
+      if (match) match.classList.add('active');
+    }
+  });
+}, { threshold: 0.3 });
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
