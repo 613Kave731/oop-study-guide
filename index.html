@@ -179,6 +179,10 @@ tr:last-child td { border-bottom: none; }
     <a href="#gamelogy">🎱 Game Logic</a>
     <a href="#quickref">⚡ Quick Reference</a>
   </div>
+  <div class="nav-group">
+    <div class="nav-label">v2 Features</div>
+    <a href="#v2features">🆕 Snooker Trap · Guaranteed Hand · Best-of</a>
+  </div>
 </nav>
 
 <!-- ════════════════════ MAIN ════════════════════ -->
@@ -197,6 +201,9 @@ tr:last-child td { border-bottom: none; }
     <span class="tag">Generics</span>
     <span class="tag">Exception Handling</span>
     <span class="tag">Rule Customizability</span>
+    <span class="tag">Snooker Trap</span>
+    <span class="tag">Best-of Match</span>
+    <span class="tag">Guaranteed Hand</span>
   </div>
 </div>
 
@@ -1042,7 +1049,9 @@ Card red = deck.drawIf(c -> c <span class="keyword">instanceof</span> RedCard);<
   </table>
   <h3>Turn Execution — playTurn() step by step</h3>
   <ol style="padding-left:1.3rem; line-height:2.2">
+    <li><code>rule = state.getRule()</code> — resolve rule reference once at turn start</li>
     <li>Safety block? → skip turn, clear flag</li>
+    <li><strong>Snooker trap active?</strong> → auto-escape (EscapeCard found) or auto-foul (4 pts to opponent) → drain stamina, return</li>
     <li>Stamina = 0? → exhaustion detected by GameController</li>
     <li>Hand empty? → skip turn</li>
     <li><code>chooseCard(state)</code> — Human/AI/GUI picks a card</li>
@@ -1054,8 +1063,8 @@ Card red = deck.drawIf(c -> c <span class="keyword">instanceof</span> RedCard);<
     <li>Advance clearance index if ColourCard potted in clearance phase</li>
     <li><code>reduceStamina(rule.getStaminaDrain())</code></li>
   </ol>
-  <h3>Deck — 30 cards</h3>
-  <p>10×Red(1pt) + Yellow(2)+Green(3)+Brown(4)+Blue(5)+Pink(6)+Black(7) + Safety + FreeBall + Magnet×2 + Glue×2</p>
+  <h3>Deck — 26 cards (v2)</h3>
+  <p>10×Red(1pt) + Yellow(2)+Green(3)+Brown(4)+Blue(5)+Pink(6)+Black(7) + Safety + FreeBall + Magnet×2 + Glue×2 + <strong>Snooker×2 + Escape×2</strong></p>
 </div>
 
 <!-- ══════════════════ QUICK REF ══════════════════ -->
@@ -1068,7 +1077,7 @@ Card red = deck.drawIf(c -> c <span class="keyword">instanceof</span> RedCard);<
     <div class="qr-card"><h4>Encapsulation</h4><p>Player.stamina private. Only reduceStamina() (private) changes it. Only playTurn() calls that.</p></div>
     <div class="qr-card"><h4>Info Hiding</h4><p>applyHandEffect() hook — card reaches hand without hand being public. drawIf() hides ArrayList.</p></div>
     <div class="qr-card"><h4>Abstraction</h4><p>abstract Card (shared state). IGameRule interface (pure contract). abstract Player.chooseCard().</p></div>
-    <div class="qr-card"><h4>Inheritance</h4><p>Card→BallCard→RedCard/ColourCard. Card→ActionCard→6 types. Player→3 subclasses.</p></div>
+    <div class="qr-card"><h4>Inheritance</h4><p>Card→BallCard→RedCard/ColourCard. Card→ActionCard→8 types (incl. SnookerTrapCard, EscapeCard). Player→3 subclasses.</p></div>
     <div class="qr-card"><h4>Composition</h4><p>Player HAS-A Hand. GameState HAS-A Deck + ScoreBoard + IGameRule. GameController HAS-A GameState.</p></div>
     <div class="qr-card"><h4>Subtyping / Multityping</h4><p>Player implements IScoreable → IS-A Player AND IS-A IScoreable simultaneously.</p></div>
     <div class="qr-card"><h4>Poly — Inclusion</h4><p>IGameRule rule → holds ChaosModeRule at runtime. card.play() → dispatches to RedCard.play().</p></div>
@@ -1083,6 +1092,118 @@ Card red = deck.drawIf(c -> c <span class="keyword">instanceof</span> RedCard);<
     <div class="qr-card"><h4>Static keyword</h4><p>CLEARANCE_ORDER static final — one copy for all games. CardFactory.buildStandardDeck() static utility.</p></div>
   </div>
   <div class="tip" style="margin-top:1.3rem"><strong>GitHub repo note:</strong> When pushing this guide to GitHub, create a new repo named <code>oop-study-guide</code> with a README.md linking to the HTML file. GitHub Pages can host it directly so it's viewable in browser.</div>
+</div>
+
+<hr class="divider"/>
+
+<!-- ══════════════════ V2 FEATURES ══════════════════ -->
+<div class="section" id="v2features">
+  <div class="section-header">
+    <div class="section-num">v2</div>
+    <div>
+      <h2>🆕 Version 2 Features — May 2026</h2>
+      <div class="bro">Snooker Trap · Guaranteed Hand · Best-of Match</div>
+    </div>
+  </div>
+  <div class="exam"><strong>Oral tip:</strong> These three features were added to demonstrate new OOP mechanics. Each one has a clear design pattern behind it — know them by name.</div>
+
+  <h3>1. Snooker Trap Mechanic — new ActionCard subclasses</h3>
+  <p>Two new cards extend the <code>ActionCard</code> inheritance chain, demonstrating that the system is <strong>Open for Extension, Closed for Modification</strong> (OCP): <code>Player.playTurn()</code> was never touched to support them.</p>
+  <pre><span class="comment">// Card.java — two new ActionCard subclasses</span>
+<span class="keyword">class</span> SnookerTrapCard <span class="keyword">extends</span> ActionCard {
+    <span class="keyword">public</span> SnookerTrapCard() { <span class="keyword">super</span>("Snooker"); }
+    @Override <span class="keyword">public void</span> play(GameState state) {
+        state.applySnookerTrap();   <span class="comment">// sets snookerTrapActive = true</span>
+    }
+}
+
+<span class="keyword">class</span> EscapeCard <span class="keyword">extends</span> ActionCard {
+    <span class="keyword">public</span> EscapeCard() { <span class="keyword">super</span>("Escape"); }
+    @Override <span class="keyword">public void</span> play(GameState state) {
+        <span class="comment">// snooker cleared in playTurn() before this is called</span>
+    }
+}</pre>
+  <p><strong>GameState</strong> encapsulates the trap flag:</p>
+  <pre><span class="comment">// GameState.java — snooker trap encapsulated as a private flag</span>
+<span class="keyword">private boolean</span> snookerTrapActive = false;
+<span class="keyword">public void</span>    applySnookerTrap() { snookerTrapActive = true; }
+<span class="keyword">public boolean</span> isSnookered()      { <span class="keyword">return</span> snookerTrapActive; }
+<span class="keyword">public void</span>    clearSnookerTrap() { snookerTrapActive = false; }</pre>
+  <p><strong>Player.playTurn()</strong> auto-resolves the snooker before normal card selection (step 1.5):</p>
+  <pre><span class="comment">// Player.java — snooker check runs before chooseCard()</span>
+<span class="keyword">if</span> (state.isSnookered()) {
+    state.clearSnookerTrap();
+    <span class="keyword">int</span> escIdx = -1;
+    <span class="keyword">for</span> (<span class="keyword">int</span> i = 0; i &lt; handCards.size(); i++) {
+        <span class="keyword">if</span> (handCards.get(i) <span class="keyword">instanceof</span> EscapeCard) { escIdx = i; <span class="keyword">break</span>; }
+    }
+    <span class="keyword">if</span> (escIdx &gt;= 0) {
+        hand.removeCard(escIdx);   <span class="comment">// consume EscapeCard — no foul</span>
+    } <span class="keyword">else</span> {
+        state.setPendingFoul(4, "snookered with no escape card");
+    }
+    reduceStamina(rule.getStaminaDrain());
+    <span class="keyword">return</span>;
+}</pre>
+  <div class="exam"><strong>Oral answer:</strong> "SnookerTrapCard and EscapeCard both extend ActionCard — pure inheritance. When a SnookerTrap is played, GameState sets snookerTrapActive=true (encapsulation). On the opponent's next turn, playTurn() detects it at step 1.5 and auto-resolves: if they hold an EscapeCard it is consumed (no foul); otherwise a 4-point foul is recorded via setPendingFoul(). The snooker check runs before chooseCard() so the player has no choice — this mirrors the real snooker rule."</div>
+
+  <h3>2. Guaranteed Hand (Option B) — reuse of Deck.drawIf()</h3>
+  <p>Each player's opening hand is guaranteed to contain at least one <code>RedCard</code> and one <code>ColourCard</code>, so they always have a legal pot option. This reuses the existing <code>Deck.drawIf(Predicate&lt;T&gt;)</code> method — parametric polymorphism in action.</p>
+  <pre><span class="comment">// GameController.java — guaranteed deal uses drawIf() from Deck</span>
+<span class="keyword">private void</span> dealInitialHands() {
+    <span class="keyword">for</span> (Player p : players) {
+        dealGuaranteed(p, c -&gt; c <span class="keyword">instanceof</span> RedCard);     <span class="comment">// always 1 Red</span>
+        dealGuaranteed(p, c -&gt; c <span class="keyword">instanceof</span> ColourCard);  <span class="comment">// always 1 Colour</span>
+        <span class="keyword">for</span> (<span class="keyword">int</span> i = 0; i &lt; 3; i++) p.drawCard(deck);      <span class="comment">// 3 random</span>
+    }
+}
+
+<span class="keyword">private void</span> dealGuaranteed(Player p, Predicate&lt;Card&gt; type) {
+    <span class="keyword">try</span> {
+        p.getHand().addCard(state.getDeck().drawIf(type));  <span class="comment">// typed draw</span>
+    } <span class="keyword">catch</span> (EmptyDeckException e) {
+        p.drawCard(state.getDeck());   <span class="comment">// fallback: random card</span>
+    }
+}</pre>
+  <div class="exam"><strong>Oral answer:</strong> "dealGuaranteed() uses Deck.drawIf(Predicate&lt;T&gt;) which was already in the code for MagnetCard. I reused it here with a different lambda — c instanceof RedCard vs c instanceof EscapeCard in MagnetCard. Same parametric method, different predicate. Zero code duplication."</div>
+
+  <h3>3. Best-of Match — frame lifecycle in SnookerGUI</h3>
+  <p>The GUI now manages a match of 1, 3, or 5 frames. Frame tracking lives in <code>SnookerGUI</code> (the View), keeping the game engine unchanged.</p>
+  <pre><span class="comment">// SnookerGUI.java — match state (View layer)</span>
+<span class="keyword">private int</span>[]  framesWon = {0, 0};   <span class="comment">// [0]=human, [1]=AI</span>
+<span class="keyword">private int</span>    bestOf    = 3;        <span class="comment">// 1 / 3 / 5</span>
+<span class="keyword">private boolean</span> frameResultRecorded = false;  <span class="comment">// guard against double-count</span>
+
+<span class="comment">// Called once per frame end — frameResultRecorded prevents double-counting</span>
+<span class="keyword">if</span> (!frameResultRecorded) {
+    frameResultRecorded = true;
+    String fw = controller.getWinnerName();
+    <span class="keyword">if</span> (fw.equals(humanPlayer.getName()))  framesWon[0]++;
+    <span class="keyword">else if</span> (fw.equals(aiPlayer.getName())) framesWon[1]++;
+}
+
+<span class="comment">// Start next frame: reset players, keep framesWon</span>
+<span class="keyword">private void</span> startNextFrame() {
+    humanPlayer.resetForNewFrame();   <span class="comment">// stamina=20, exhausted=false, hand cleared</span>
+    aiPlayer.resetForNewFrame();
+    startGame(activeRuleType);        <span class="comment">// new GameController + fresh deck</span>
+}</pre>
+  <p><code>Player.resetForNewFrame()</code> is a new public method that accesses private fields (encapsulation within the class):</p>
+  <pre><span class="comment">// Player.java</span>
+<span class="keyword">public void</span> resetForNewFrame() {
+    stamina   = 20;
+    exhausted = false;
+    hand.clear();     <span class="comment">// Hand.clear() — new method added to Hand.java</span>
+}</pre>
+  <div class="exam"><strong>Oral answer:</strong> "The match system sits entirely in the View (SnookerGUI), which is correct MVC: the game engine knows nothing about frames or best-of. Each frame starts a fresh GameController with a new GameState and deck. framesWon is tracked in the GUI and displayed in the score panel. frameResultRecorded prevents double-counting when refreshDisplay() is called multiple times after game over."</div>
+
+  <h3>Summary — which OOP concepts each feature demonstrates</h3>
+  <table>
+    <tr><th>Feature</th><th>OOP Concepts</th><th>Key Files</th></tr>
+    <tr><td>Snooker Trap</td><td>Inheritance (ActionCard→SnookerTrapCard/EscapeCard), Encapsulation (snookerTrapActive private), OCP (playTurn() unchanged)</td><td>Card.java, GameState.java, Player.java</td></tr>
+    <tr><td>Guaranteed Hand</td><td>Parametric Polymorphism reuse (Deck.drawIf), Lambda / Predicate&lt;T&gt;, DRY</td><td>GameController.java, Deck.java</td></tr>
+    <tr><td>Best-of Match</td><td>MVC separation (match state in View), Encapsulation (resetForNewFrame private fields), Composition (GUI manages Controller lifecycle)</td><td>SnookerGUI.java, Player.java, Hand.java</td></tr>
+  </table>
 </div>
 
 </main>
