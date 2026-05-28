@@ -181,7 +181,8 @@ tr:last-child td { border-bottom: none; }
   </div>
   <div class="nav-group">
     <div class="nav-label">v2 Features</div>
-    <a href="#v2features">🆕 Snooker Trap · Guaranteed Hand · Best-of</a>
+    <a href="#v2features">⭐ v2 · Snooker Trap · Guaranteed Hand · Best-of</a>
+    <a href="#v3fixes">🔴 v3 Fixes &amp; Exam Traps</a>
   </div>
 </nav>
 
@@ -240,7 +241,7 @@ tr:last-child td { border-bottom: none; }
     <tr><td>Subtyping / Multityping</td><td>Player implements IScoreable; Card implements IPlayable</td><td>Player.java:20, Card.java:12</td></tr>
     <tr><td>Poly — inclusion</td><td><code>IGameRule rule</code> holds 4 different implementations</td><td>GameState.java:6</td></tr>
     <tr><td>Poly — parametric</td><td><code>Deck&lt;T extends Card&gt;</code></td><td>Deck.java:6</td></tr>
-    <tr><td>Poly — overloading</td><td>Constructors; <code>restoreStamina</code>/<code>reduceStamina</code></td><td>Player.java</td></tr>
+    <tr><td>Poly — overloading</td><td><code>RuleFactory.create(RuleType)</code> vs <code>create(RuleType, RuleBuilder)</code>; <code>setPendingFoul(int)</code> vs <code>setPendingFoul(int, String)</code>; constructors <code>RedCard()</code> vs <code>ColourCard(String,int)</code></td><td>RuleFactory.java, GameState.java, Card.java</td></tr>
     <tr><td>Poly — coercion</td><td><code>instanceof RedCard/ColourCard/ActionCard</code></td><td>IGameRule.java:47-50</td></tr>
     <tr><td>Exception Handling</td><td><code>InvalidMoveException</code>, <code>FoulException(penalty)</code>, <code>EmptyDeckException</code></td><td>Card.java:173-183</td></tr>
     <tr><td>Extensibility / OCP</td><td>New rule = new class + enum case; 0 existing changes</td><td>RuleFactory.java</td></tr>
@@ -262,7 +263,7 @@ tr:last-child td { border-bottom: none; }
     <tr><th>Object</th><th>Class</th><th>State</th><th>Behaviour</th></tr>
     <tr><td>Red card</td><td><code>RedCard</code></td><td>name="Red", points=1</td><td><code>play()</code> decrements reds on table</td></tr>
     <tr><td>Human player</td><td><code>HumanPlayer</code></td><td>stamina=20, hand=[5 cards]</td><td><code>chooseCard()</code> reads Scanner input</td></tr>
-    <tr><td>Game state</td><td><code>GameState</code></td><td>redsOnTable=10, glueActive=false</td><td><code>isInClearanceMode()</code>, <code>decrementReds()</code></td></tr>
+    <tr><td>Game state</td><td><code>GameState</code></td><td>redsOnTable=15, glueActive=false</td><td><code>isInClearanceMode()</code>, <code>decrementReds()</code></td></tr>
     <tr><td>AI player</td><td><code>AggressiveAI</code></td><td>stamina=20, hand=[5 cards]</td><td><code>chooseCard()</code> picks highest-value valid card</td></tr>
     <tr><td>Rule engine</td><td><code>SnookerRule</code></td><td>stateless</td><td><code>isValid()</code>, <code>calculatePoints()</code></td></tr>
   </table>
@@ -316,25 +317,30 @@ GameController ctrl = new GameController(p1, p2, rule);</pre>
     </div>
   </div>
   <p><strong>Overloading</strong> = same method name, different parameter list. Resolved at <strong>compile time</strong> (static dispatch). Not the same as overriding.</p>
-  <h3>In my project</h3>
-  <pre><span class="comment">// Player.java — two stamina-related methods, conceptually overloaded</span>
-<span class="keyword">public void</span>  restoreStamina(<span class="keyword">int</span> amount) { stamina = Math.min(20, stamina + amount); }
-<span class="keyword">private void</span> reduceStamina(<span class="keyword">int</span> drain)   { stamina = Math.max(0,  stamina - drain); }
+  <div class="warn"><strong>Common exam trap:</strong> <code>restoreStamina(int)</code> and <code>reduceStamina(int)</code> are <strong>NOT</strong> overloaded — they have <em>different names</em>. Overloading requires the <em>same</em> name with different parameters. Don't say these are overloaded to the professor.</div>
+  <h3>Real overloading examples in my project</h3>
+  <pre><span class="comment">// 1. RuleFactory.java — same method name, two different signatures (ad-hoc polymorphism)</span>
+<span class="keyword">public static</span> IGameRule create(RuleType type)                { ... }  <span class="comment">// overload A</span>
+<span class="keyword">public static</span> IGameRule create(RuleType type, RuleBuilder b) { ... }  <span class="comment">// overload B</span>
+<span class="comment">// Compiler picks the right one based on call site — compile-time dispatch</span>
 
-<span class="comment">// ScoreBoard.java — addPoints is a single method but conceptually
-// demonstrates the pattern used across multiple callers with different data</span>
-<span class="keyword">public void</span> addPoints(String playerName, <span class="keyword">int</span> pts) { ... }
+<span class="comment">// 2. GameState.java — optional reason string</span>
+<span class="keyword">public void</span> setPendingFoul(<span class="keyword">int</span> pts)                { setPendingFoul(pts, ""); }
+<span class="keyword">public void</span> setPendingFoul(<span class="keyword">int</span> pts, String reason) { pendingFoulPoints = pts; pendingFoulReason = reason; }
 
-<span class="comment">// Any class has overloaded constructors — see Topic 6 for details</span></pre>
+<span class="comment">// 3. Constructors — RedCard() zero args vs ColourCard(String, int) two args</span>
+<span class="keyword">public</span> RedCard()                              { <span class="keyword">super</span>("Red", 1); }
+<span class="keyword">public</span> ColourCard(String colour, <span class="keyword">int</span> points) { <span class="keyword">super</span>(colour, points); }</pre>
   <h3>Overloading vs Overriding — key exam distinction</h3>
   <table>
     <tr><th></th><th>Overloading</th><th>Overriding</th></tr>
     <tr><td>Where</td><td>Same class (or subclass)</td><td>Subclass only</td></tr>
-    <tr><td>Signature</td><td>Must differ</td><td>Must be identical</td></tr>
-    <tr><td>Resolved</td><td>Compile time</td><td>Runtime</td></tr>
+    <tr><td>Signature</td><td><strong>Must differ</strong></td><td>Must be identical</td></tr>
+    <tr><td>Resolved</td><td><strong>Compile time</strong></td><td>Runtime</td></tr>
     <tr><td>Annotation</td><td>None needed</td><td><code>@Override</code></td></tr>
+    <tr><td>Method name</td><td><strong>Same</strong></td><td>Same</td></tr>
   </table>
-  <div class="exam"><strong>Oral answer:</strong> "Overloading appears in my project in stamina management — restoreStamina() and reduceStamina() have the same parameter type but different names to show intent. The clearest overloading is in constructors: RedCard() takes no arguments while ColourCard(String, int) takes two."</div>
+  <div class="exam"><strong>Oral answer:</strong> "The clearest overloading in my project is <code>RuleFactory.create()</code> — it has two signatures. The first takes just a RuleType. The second takes a RuleType plus a RuleBuilder for the Custom rule. Java selects the correct version at compile time. <code>GameState.setPendingFoul()</code> is another: one version with just the penalty int, one with an optional reason string. Both are ad-hoc polymorphism — same name, different parameters."</div>
 </div>
 
 <!-- ══════════════════ TOPIC 4 ══════════════════ -->
@@ -579,11 +585,11 @@ Card (abstract) — implements IPlayable
  │    ├── RedCard          — <span class="keyword">extends</span> BallCard
  │    └── ColourCard       — <span class="keyword">extends</span> BallCard
  └── ActionCard (abstract) — <span class="keyword">extends</span> Card, always 0pts
-      ├── SafetyCard       — <span class="keyword">extends</span> ActionCard
-      ├── FoulCard         — <span class="keyword">extends</span> ActionCard
-      ├── FreeBallCard     — <span class="keyword">extends</span> ActionCard
-      ├── MagnetCard       — <span class="keyword">extends</span> ActionCard
-      └── GlueCard         — <span class="keyword">extends</span> ActionCard
+      ├── SafetyCard       — <span class="keyword">extends</span> ActionCard  (blocks opponent next turn)
+      ├── MagnetCard       — <span class="keyword">extends</span> ActionCard  (draws needed card from deck)
+      ├── GlueCard         — <span class="keyword">extends</span> ActionCard  (blocks opponent's next ≥5pt card)
+      ├── SnookerTrapCard  — <span class="keyword">extends</span> ActionCard  (force opponent to escape or foul)
+      └── EscapeCard       — <span class="keyword">extends</span> ActionCard  (auto-escape a snooker trap)
 
 <span class="comment">// PLAYER hierarchy</span>
 Player (abstract) — implements IScoreable
@@ -597,7 +603,8 @@ Player (abstract) — implements IScoreable
     <tr><td><code>toString()</code></td><td><code>getDescription()</code> — per card text</td></tr>
     <tr><td><code>applyHandEffect()</code> (no-op)</td><td>MagnetCard overrides to draw Red</td></tr>
   </table>
-  <div class="exam"><strong>Oral answer:</strong> "BallCard and ActionCard are intermediate abstract classes. ActionCard exists because every action card has 0 points — rather than repeating super('name', 0) in each subclass, ActionCard's constructor does it once: protected ActionCard(String name) { super(name, 0); }. All six action cards inherit this for free."</div>
+  <div class="warn"><strong>Exam trap:</strong> <code>FoulCard</code> and <code>FreeBallCard</code> no longer exist — they were removed from Card.java. Never list them in the hierarchy.</div>
+  <div class="exam"><strong>Oral answer:</strong> "BallCard and ActionCard are intermediate abstract classes. ActionCard exists because every action card has 0 points — rather than repeating super('name', 0) in each subclass, ActionCard's constructor does it once: <code>protected ActionCard(String name) { super(name, 0); }</code>. All five concrete action card subclasses inherit this for free. Adding SnookerTrapCard and EscapeCard required zero changes to playTurn() — that is the Open/Closed Principle."</div>
 </div>
 
 <!-- ══════════════════ TOPIC 12 ══════════════════ -->
@@ -959,7 +966,7 @@ Card red = deck.drawIf(c -> c <span class="keyword">instanceof</span> RedCard);<
     <tr><th>Exception</th><th>Thrown by</th><th>Caught in</th><th>Effect</th></tr>
     <tr><td><code>InvalidMoveException</code></td><td>SnookerRule (clearance violation)</td><td>Player.playTurn()</td><td>Turn forfeited, stamina still drained</td></tr>
     <tr><td><code>EmptyDeckException</code></td><td>Deck.draw(), Deck.drawIf()</td><td>GameController, MagnetCard</td><td>Logged; game may end</td></tr>
-    <tr><td><code>FoulException(penalty=4)</code></td><td>FoulCard.play()</td><td>Player.playTurn()</td><td>Penalty points tracked separately</td></tr>
+    <tr><td><code>FoulException(penalty)</code></td><td>Defined in Card.java; caught in Player.playTurn() step 7 as safety net</td><td>Player.playTurn()</td><td>FoulCard is deleted — fouls now go via <code>state.setPendingFoul()</code>. FoulException stays in hierarchy for future card types that may throw it.</td></tr>
   </table>
   <div class="exam"><strong>Oral answer:</strong> "FoulException is the most interesting. It extends Exception — checked — so every caller must handle it. It carries a penalty int field because the penalty amount is part of the foul event itself. The caller doesn't need to look up what a foul costs — the exception tells it."</div>
 </div>
@@ -991,7 +998,7 @@ Card red = deck.drawIf(c -> c <span class="keyword">instanceof</span> RedCard);<
     <tr><td>Strategy</td><td><code>IGameRule</code> + 4 implementations</td><td>Swap rule algorithms at runtime without changing callers</td></tr>
     <tr><td>Template Method</td><td><code>Player.playTurn()</code> + abstract <code>chooseCard()</code></td><td>Turn skeleton fixed; card selection varies per subclass</td></tr>
     <tr><td>Factory</td><td><code>CardFactory</code>, <code>RuleFactory</code></td><td>Create objects without exposing constructors to callers</td></tr>
-    <tr><td>Builder (planned)</td><td><code>RuleBuilder → CustomRule</code></td><td>Compose a rule step-by-step; call build() for the object</td></tr>
+    <tr><td>Builder ✓</td><td><code>RuleBuilder → CustomRule</code></td><td>Fluent API: chain setters then <code>build()</code> — GUI dialog + console mode both implemented</td></tr>
     <tr><td>MVC</td><td><code>GameState</code> / <code>SnookerGUI</code> / <code>GameController</code></td><td>Model holds data; View renders it; Controller mediates</td></tr>
     <tr><td>Dependency Injection</td><td><code>GameController(IGameRule rule)</code></td><td>Rule injected by caller; controller never constructs it</td></tr>
   </table>
@@ -1003,35 +1010,56 @@ Card red = deck.drawIf(c -> c <span class="keyword">instanceof</span> RedCard);<
     <div class="section-num">+</div>
     <div><h2>⚙️ Rule Customizability — Prof's Main Focus</h2></div>
   </div>
-  <div class="warn"><strong>Prof's exact words:</strong> "letting the player to define brand new rules not to select among existing one."</div>
-  <h3>Current: selection (not enough)</h3>
-  <p>Player picks one of 4 fixed rule sets from the GUI. This is a menu, not authorship.</p>
-  <h3>Planned: CustomRule + RuleBuilder + RuleParser</h3>
-  <pre><span class="comment">// CustomRule implements IGameRule — player-defined parameters</span>
-<span class="keyword">public class</span> CustomRule <span class="keyword">implements</span> IGameRule {
-    <span class="keyword">private final boolean</span> sequenceEnforced;
-    <span class="keyword">private final double</span>  scoreMultiplier;
-    <span class="keyword">private final int</span>     staminaDrain;
-    <span class="keyword">private final int</span>     foulPenalty;
+  <div class="exam"><strong>Prof's exact words:</strong> "letting the player to define brand new rules not to select among existing one." — This is <strong>fully implemented</strong> (v3, May 2026).</div>
+  <h3>✅ Implemented: CustomRule + RuleBuilder + GUI dialog + overloaded RuleFactory</h3>
+  <pre><span class="comment">// 1. CustomRule — implements IGameRule with 4 runtime parameters (IGameRule.java)</span>
+<span class="keyword">class</span> CustomRule <span class="keyword">implements</span> IGameRule {
+    <span class="keyword">private final boolean</span> enforceSequence;  <span class="comment">// Red→Colour order on/off</span>
+    <span class="keyword">private final double</span>  scoreMultiplier; <span class="comment">// 0.5× to 3.0× points</span>
+    <span class="keyword">private final int</span>     staminaDrain;    <span class="comment">// 1–3 per turn</span>
+    <span class="keyword">private final int</span>     foulPenalty;     <span class="comment">// 4–7 pts to opponent</span>
 
-    @Override <span class="keyword">public boolean</span> isValid(Card c, GameState s) <span class="keyword">throws</span> InvalidMoveException {
-        <span class="keyword">if</span> (!sequenceEnforced) <span class="keyword">return true</span>;
-        <span class="comment">// apply sequence logic using foulPenalty instead of hardcoded 7</span>
-    }
-    @Override <span class="keyword">public int</span> calculatePoints(Card c, GameState s) {
-        <span class="keyword">return</span> (<span class="keyword">int</span>)(c.getPoints() * scoreMultiplier);
-    }
-    @Override <span class="keyword">public int</span> getStaminaDrain() { <span class="keyword">return</span> staminaDrain; }
+    @Override <span class="keyword">public int</span>  calculatePoints(Card c, GameState s) { <span class="keyword">return</span> (<span class="keyword">int</span>) Math.round(c.getPoints() * scoreMultiplier); }
+    @Override <span class="keyword">public int</span>  getStaminaDrain()  { <span class="keyword">return</span> staminaDrain; }
+    @Override <span class="keyword">public int</span>  calculateFoulPenalty(Card c, GameState s) { <span class="keyword">return</span> foulPenalty; }
 }
 
-<span class="comment">// Console interaction:</span>
-<span class="comment">// > Sequence enforced? (y/n): n</span>
-<span class="comment">// > Score multiplier: 2.5</span>
-<span class="comment">// > Stamina drain per turn: 3</span>
-<span class="comment">// > Foul penalty: 7</span>
-<span class="comment">// IGameRule rule = new RuleBuilder().sequence(false).multiplier(2.5)...</span>
-<span class="comment">//                                   .staminaDrain(3).foulPenalty(7).build();</span></pre>
-  <div class="exam"><strong>Oral answer:</strong> "Currently the player selects from 4 pre-built rules. The professor wants the player to author a rule from scratch. I'm adding CustomRule — a new IGameRule implementation whose behaviour is assembled from parameters set at runtime. RuleBuilder provides a fluent console interface. Because CustomRule implements IGameRule, GameController and Player accept it with zero code changes — this is OCP in action."</div>
+<span class="comment">// 2. RuleBuilder — Builder Pattern: fluent API (IGameRule.java)</span>
+<span class="keyword">class</span> RuleBuilder {
+    <span class="keyword">private boolean</span> enforceSequence = <span class="keyword">true</span>;
+    <span class="keyword">private double</span>  scoreMultiplier  = 1.0;
+    <span class="keyword">private int</span>     staminaDrain     = 1;
+    <span class="keyword">private int</span>     foulPenalty      = 4;
+
+    <span class="keyword">public</span> RuleBuilder enforceSequence(<span class="keyword">boolean</span> v) { enforceSequence = v; <span class="keyword">return this</span>; }
+    <span class="keyword">public</span> RuleBuilder scoreMultiplier(<span class="keyword">double</span> v)  { scoreMultiplier = v; <span class="keyword">return this</span>; }
+    <span class="keyword">public</span> RuleBuilder staminaDrain(<span class="keyword">int</span> v) { staminaDrain = Math.max(1, Math.min(3, v)); <span class="keyword">return this</span>; }
+    <span class="keyword">public</span> RuleBuilder foulPenalty(<span class="keyword">int</span> v)  { foulPenalty  = Math.max(4, Math.min(7, v)); <span class="keyword">return this</span>; }
+    <span class="keyword">public</span> CustomRule  build() { <span class="keyword">return new</span> CustomRule(enforceSequence, scoreMultiplier, staminaDrain, foulPenalty); }
+    <span class="keyword">public static</span> CustomRule buildFromConsole(Scanner sc) { ... } <span class="comment">// overloaded: same concept, console input</span>
+}
+
+<span class="comment">// 3. RuleFactory — overloaded create() (ad-hoc polymorphism) (RuleFactory.java)</span>
+<span class="keyword">public static</span> IGameRule create(RuleType type)                { ... }           <span class="comment">// overload A</span>
+<span class="keyword">public static</span> IGameRule create(RuleType type, RuleBuilder b) { <span class="keyword">return</span> b.build(); } <span class="comment">// overload B</span>
+
+<span class="comment">// 4. SnookerGUI — custom rule dialog (SnookerGUI.java)</span>
+pendingCustomBuilder
+    .enforceSequence(seqBox.isSelected())
+    .scoreMultiplier((Double) mulSpin.getValue())
+    .staminaDrain((Integer) stmSpin.getValue())
+    .foulPenalty((Integer) foulSpin.getValue());
+IGameRule rule = RuleFactory.create(RuleType.CUSTOM, pendingCustomBuilder);</pre>
+  <h3>Expected questions on this topic</h3>
+  <table>
+    <tr><th>Question</th><th>Answer</th></tr>
+    <tr><td>"How does a player define a brand new rule?"</td><td>Click "Custom Rules" → dialog opens → set 4 parameters → Apply. RuleBuilder stores them, build() creates CustomRule, overloaded RuleFactory.create(type, builder) injects it. GameController receives only IGameRule — never knows it's custom.</td></tr>
+    <tr><td>"Show me the Builder pattern"</td><td>Open RuleBuilder: private fields with defaults, fluent setters each returning <code>this</code>, build() calling new CustomRule(...). The caller never writes <code>new CustomRule(true,1.5,2,6)</code> — builder hides complexity.</td></tr>
+    <tr><td>"Show method overloading in RuleFactory"</td><td>Two <code>create()</code> methods: one RuleType only, other RuleType+RuleBuilder. Same name, different params → compiler picks at call site. Ad-hoc polymorphism.</td></tr>
+    <tr><td>"How does CustomRule satisfy OCP?"</td><td>GameController, Player.playTurn(), GameState: zero lines changed. New class + new enum case was all that was needed.</td></tr>
+    <tr><td>"What is DIP here?"</td><td>GameController(IGameRule rule) depends on the abstraction, not on SnookerRule or CustomRule. Concrete impl injected by SnookerGUI at runtime.</td></tr>
+  </table>
+  <div class="exam"><strong>Oral answer:</strong> "The player opens the Custom Rules dialog in the GUI, sets four parameters — whether sequence is enforced, score multiplier, stamina drain, and foul penalty. The GUI calls fluent methods on a RuleBuilder: .enforceSequence().scoreMultiplier().staminaDrain().foulPenalty(). Then startGame() calls the overloaded RuleFactory.create(CUSTOM, builder), which calls builder.build() and returns a CustomRule. GameController receives only IGameRule — it never knows it's a CustomRule. This one flow demonstrates DIP, OCP, LSP, Builder, Factory, and method overloading."</div>
 </div>
 
 <!-- ══════════════════ GAME LOGIC ══════════════════ -->
@@ -1043,7 +1071,7 @@ Card red = deck.drawIf(c -> c <span class="keyword">instanceof</span> RedCard);<
   <h3>Finite State Machine</h3>
   <table>
     <tr><th>Phase</th><th>Trigger</th><th>Rule</th></tr>
-    <tr><td>Standard</td><td>Game start (<code>redsOnTable = 10</code>)</td><td>Red → Colour sequence; Colours return to deck</td></tr>
+    <tr><td>Standard</td><td>Game start (<code>redsOnTable = 15</code>)</td><td>Red → Colour sequence; Colours return to deck</td></tr>
     <tr><td>Clearance</td><td><code>redsOnTable == 0</code></td><td>No Reds; Colours in strict Yellow→Black order</td></tr>
     <tr><td>Game Over</td><td>Black potted / stamina = 0 / deck empty</td><td>Winner by score or exhaustion</td></tr>
   </table>
@@ -1063,8 +1091,8 @@ Card red = deck.drawIf(c -> c <span class="keyword">instanceof</span> RedCard);<
     <li>Advance clearance index if ColourCard potted in clearance phase</li>
     <li><code>reduceStamina(rule.getStaminaDrain())</code></li>
   </ol>
-  <h3>Deck — 26 cards (v2)</h3>
-  <p>10×Red(1pt) + Yellow(2)+Green(3)+Brown(4)+Blue(5)+Pink(6)+Black(7) + Safety + FreeBall + Magnet×2 + Glue×2 + <strong>Snooker×2 + Escape×2</strong></p>
+  <h3>Deck — 30 cards (v2)</h3>
+  <p><strong>15×Red(1pt)</strong> + Yellow(2)+Green(3)+Brown(4)+Blue(5)+Pink(6)+Black(7) + Safety + Magnet×2 + Glue×2 + SnookerTrap×2 + Escape×2 = <strong>30 total</strong>.<br><em>FreeBallCard and FoulCard are deleted — not in the deck.</em></p>
 </div>
 
 <!-- ══════════════════ QUICK REF ══════════════════ -->
@@ -1203,6 +1231,90 @@ Card red = deck.drawIf(c -> c <span class="keyword">instanceof</span> RedCard);<
     <tr><td>Snooker Trap</td><td>Inheritance (ActionCard→SnookerTrapCard/EscapeCard), Encapsulation (snookerTrapActive private), OCP (playTurn() unchanged)</td><td>Card.java, GameState.java, Player.java</td></tr>
     <tr><td>Guaranteed Hand</td><td>Parametric Polymorphism reuse (Deck.drawIf), Lambda / Predicate&lt;T&gt;, DRY</td><td>GameController.java, Deck.java</td></tr>
     <tr><td>Best-of Match</td><td>MVC separation (match state in View), Encapsulation (resetForNewFrame private fields), Composition (GUI manages Controller lifecycle)</td><td>SnookerGUI.java, Player.java, Hand.java</td></tr>
+  </table>
+</div>
+
+<!-- ══════════════════ V3 EXAM TRAPS ══════════════════ -->
+<div class="section" id="v3fixes">
+  <div class="section-header">
+    <div class="section-num">🔴</div>
+    <div><h2>v3 Fixes &amp; Exam Traps — Read This Last, Remember It First</h2></div>
+  </div>
+  <div class="warn"><strong>These 5 mistakes will cost you marks if you say them out loud. Each shows the wrong answer first (what NOT to say) and the correct answer.</strong></div>
+
+  <h3>🔴 Trap 1 — Overloading: the example the professor will immediately fail</h3>
+  <table>
+    <tr><th>❌ Do NOT say this</th><th>✅ Say this instead</th></tr>
+    <tr><td><code>restoreStamina(int)</code> and <code>reduceStamina(int)</code> are overloaded.</td><td>Those have <strong>different names</strong>. Overloading = <em>same name</em>, different parameter lists. The real examples are <code>RuleFactory.create(RuleType)</code> vs <code>create(RuleType, RuleBuilder)</code>, and <code>setPendingFoul(int)</code> vs <code>setPendingFoul(int, String)</code>.</td></tr>
+  </table>
+  <pre><span class="comment">// RuleFactory.java — same factory method, two signatures (ad-hoc polymorphism)</span>
+<span class="keyword">public static</span> IGameRule create(RuleType type)                { ... }
+<span class="keyword">public static</span> IGameRule create(RuleType type, RuleBuilder b) { ... }
+
+<span class="comment">// GameState.java — same setter, optional reason string</span>
+<span class="keyword">public void</span> setPendingFoul(<span class="keyword">int</span> pts)                { setPendingFoul(pts, ""); }
+<span class="keyword">public void</span> setPendingFoul(<span class="keyword">int</span> pts, String reason) { pendingFoulPoints = pts; pendingFoulReason = reason; }
+
+<span class="comment">// Card.java — constructor overloading: different param counts</span>
+<span class="keyword">public</span> RedCard()                              { <span class="keyword">super</span>("Red", 1); }       <span class="comment">// 0 args</span>
+<span class="keyword">public</span> ColourCard(String colour, <span class="keyword">int</span> points) { <span class="keyword">super</span>(colour, points); }  <span class="comment">// 2 args</span></pre>
+  <div class="exam"><strong>If asked "show me overloading":</strong> Open RuleFactory.java. Show both create() methods side by side. "Same method name, different parameter lists. Java selects the correct one at compile time based on what the caller passes — that is ad-hoc polymorphism."</div>
+
+  <h3>🔴 Trap 2 — Reds on table: wrong number</h3>
+  <table>
+    <tr><th>❌ Wrong</th><th>✅ Correct</th></tr>
+    <tr><td>"The game starts with 10 reds"</td><td>"The game starts with <strong>15 reds</strong> — matching real snooker. GameState.redsOnTable = 15 and CardFactory adds 15 RedCards."</td></tr>
+  </table>
+  <pre><span class="comment">// GameState.java — line 1</span>
+<span class="keyword">private int</span> redsOnTable = 15;
+
+<span class="comment">// CardFactory inside GameController.java</span>
+<span class="keyword">for</span> (<span class="keyword">int</span> i = 0; i &lt; 15; i++) deck.addCard(<span class="keyword">new</span> RedCard());</pre>
+
+  <h3>🔴 Trap 3 — RuleBuilder: say "planned" and you lose a full mark</h3>
+  <table>
+    <tr><th>❌ Wrong</th><th>✅ Correct</th></tr>
+    <tr><td>"I'm planning to add a RuleBuilder" or "CustomRule will be done later"</td><td>"<strong>Both are fully implemented.</strong> Click Custom Rules → GUI dialog opens. RuleBuilder has a fluent API. RuleFactory.create() is overloaded. Demo ready."</td></tr>
+  </table>
+
+  <h3>🔴 Trap 4 — Inheritance tree: cards that no longer exist</h3>
+  <table>
+    <tr><th>❌ Dead classes (don't mention)</th><th>✅ Actual ActionCard subclasses</th></tr>
+    <tr><td><code>FoulCard</code>, <code>FreeBallCard</code></td><td><code>SafetyCard</code>, <code>MagnetCard</code>, <code>GlueCard</code>, <code>SnookerTrapCard</code>, <code>EscapeCard</code></td></tr>
+  </table>
+  <pre>ActionCard (abstract)
+ ├── SafetyCard      — blocks opponent next turn
+ ├── MagnetCard      — draws Red or best Colour from deck
+ ├── GlueCard        — blocks opponent's ≥5pt card
+ ├── SnookerTrapCard — forces escape-or-foul on opponent
+ └── EscapeCard      — auto-consumed to escape a trap</pre>
+
+  <h3>🔴 Trap 5 — Deck size and composition</h3>
+  <table>
+    <tr><th>❌ Wrong</th><th>✅ Correct</th></tr>
+    <tr><td>26 cards / 10 reds / includes FreeBall or FoulCard</td><td><strong>30 cards</strong> / <strong>15 reds</strong> / 6 colours / Safety / Magnet×2 / Glue×2 / SnookerTrap×2 / Escape×2</td></tr>
+  </table>
+
+  <hr class="divider"/>
+  <h3>🎯 Complete Prof. Distefano Question Bank — 16 questions with exact answers</h3>
+  <table>
+    <tr><th>Question</th><th>Open this file</th><th>Your 30-second answer</th></tr>
+    <tr><td>Show encapsulation and information hiding</td><td>Player.java:22-56</td><td>stamina private; only reduceStamina() (also private) changes it; only playTurn() calls reduceStamina(). applyHandEffect() is package-private — card reaches hand without Hand being public.</td></tr>
+    <tr><td>Abstract class vs interface — show both</td><td>Card.java:12, IGameRule.java:14</td><td>Card is abstract class: has private fields name, points — needs state. IGameRule is interface: no state, pure contract of 3 methods. Card uses abstract class because shared state (fields) can only live in a class.</td></tr>
+    <tr><td>4 types of polymorphism</td><td>IGameRule, Deck, RuleFactory, Card</td><td>Inclusion: IGameRule rule holds one of 4 impls at runtime. Parametric: Deck&lt;T extends Card&gt;. Overloading: RuleFactory.create() two signatures, compile-time. Coercion: instanceof RedCard/ColourCard/ActionCard narrows type.</td></tr>
+    <tr><td>Which design pattern for rules?</td><td>IGameRule.java, GameState.java, Player.java</td><td>Strategy. IGameRule = strategy interface. 4 concrete strategies. GameState holds the active one. playTurn() delegates all decisions to it — never knows which strategy is active.</td></tr>
+    <tr><td>What is DIP? Show it.</td><td>GameController.java:20</td><td>GameController(Player p1, Player p2, IGameRule rule) — depends on IGameRule abstraction. playTurn() calls rule.isValid() — never SnookerRule.isValid(). The concrete rule is injected by SnookerGUI at startup. High-level modules depend on abstractions, not concretions.</td></tr>
+    <tr><td>How does a player define a brand new rule?</td><td>IGameRule.java, RuleFactory.java, SnookerGUI.java</td><td>Click Custom Rules → dialog → set 4 params → Apply. RuleBuilder stores them fluently, build() creates CustomRule, overloaded RuleFactory.create(CUSTOM, builder) injects it. GameController receives IGameRule — never knows it's custom.</td></tr>
+    <tr><td>What is LSP? Show it.</td><td>IGameRule.java</td><td>Any IGameRule — SnookerRule, ChaosModeRule, CustomRule — can replace any other wherever IGameRule is expected without breaking GameController or playTurn(). All four implement the full interface contract.</td></tr>
+    <tr><td>Parametric polymorphism with Deck&lt;T&gt;</td><td>Deck.java</td><td>Deck&lt;T extends Card&gt; — bound ensures only Card subtypes. drawIf(Predicate&lt;T&gt;) also parametric — MagnetCard passes c-&gt;instanceof RedCard, GameController passes c-&gt;instanceof ColourCard. Same generic method, different lambdas, type-safe at compile time.</td></tr>
+    <tr><td>What does super() do in RedCard?</td><td>Card.java:46</td><td>RedCard() → super("Red",1) → BallCard → super(colour,pts) → Card → this.name=name. private fields name and points can ONLY be set in Card's constructor — super() is mandatory to reach them. Without it fields stay null/0.</td></tr>
+    <tr><td>Show meaningful exception handling</td><td>Player.java:130-138, Card.java:204-216</td><td>InvalidMoveException = clearance violation — thrown by SnookerRule, caught in playTurn(), turn forfeited but stamina still drained. EmptyDeckException from drawIf() caught differently in MagnetCard (log) vs GameController (game may end). FoulException carries a penalty int — the exception IS the foul event.</td></tr>
+    <tr><td>Template Method — show it</td><td>Player.java:82-184</td><td>playTurn() = fixed skeleton (12 steps, never changes). chooseCard() = abstract hole (HumanPlayer: Scanner; AggressiveAI: stream; GUIPlayer: click). Adding a new player type = new class overriding chooseCard(). playTurn() never changes.</td></tr>
+    <tr><td>OCP — concrete example</td><td>RuleFactory.java</td><td>Adding CustomRule: 1 new class, 1 new enum case, 1 new switch case. GameController.java, Player.java, GameState.java — zero lines changed. Open for extension, closed for modification.</td></tr>
+    <tr><td>Show the Builder pattern</td><td>IGameRule.java (RuleBuilder class)</td><td>Private fields with defaults. Fluent setters each return this. build() calls new CustomRule(4 params). Caller never writes the 4-arg constructor directly — builder hides complexity and makes code readable.</td></tr>
+    <tr><td>How does MagnetCard use Information Hiding?</td><td>Card.java:103-147</td><td>applyHandEffect(Hand hand, GameState state) — Hand is passed in only for this call. MagnetCard never stores a reference. The card reaches the hand without Hand being public or the player's hand being exposed. Package-private method = only snooker package can call it.</td></tr>
+    <tr><td>Show per-player sequence tracking</td><td>GameState.java</td><td>Map&lt;String,Boolean&gt; lastRedByPlayer — keyed by player name. GameController calls state.setCurrentPlayer(name) before each turn. expectingRed() looks up by current player name. Without this, after Ronnie pots Red, the Machine would also be in "colour allowed" state — wrong.</td></tr>
+    <tr><td>Why is onInvalidPlay() separate from isValid()?</td><td>IGameRule.java</td><td>SRP: isValid() is a pure predicate. AggressiveAI calls it on every card in hand during filtering. If isValid() set fouls as a side-effect, filtering a 5-card hand would create 4 spurious fouls before the AI even picks one. onInvalidPlay() is called exactly once: after the player actually commits an illegal play.</td></tr>
   </table>
 </div>
 
